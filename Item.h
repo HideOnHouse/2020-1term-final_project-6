@@ -6,7 +6,7 @@
 #define INC_2020_1TERM_FINALPROJECT_6_ITEM_H
 
 
-class item {
+class Item {
 
 };
 

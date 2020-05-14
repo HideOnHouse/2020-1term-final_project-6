@@ -6,7 +6,12 @@
 #define INC_2020_1TERM_FINALPROJECT_6_SNAKE_H
 
 
-class snake {
+class Snake {
+private:
+    unsigned int tali;
+    int direction;
+
+public:
 
 };
 
