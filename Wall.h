@@ -1,0 +1,14 @@
+//
+// Created by FURO on 2020-05-14.
+//
+
+#ifndef INC_2020_1TERM_FINALPROJECT_6_WALL_H
+#define INC_2020_1TERM_FINALPROJECT_6_WALL_H
+
+
+class Wall {
+
+};
+
+
+#endif //INC_2020_1TERM_FINALPROJECT_6_WALL_H

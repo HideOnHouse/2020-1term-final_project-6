@@ -1,0 +1,14 @@
+//
+// Created by hideoncode on 5/14/20.
+//
+
+#ifndef INC_2020_1TERM_FINALPROJECT_6_SCOREBOARD_H
+#define INC_2020_1TERM_FINALPROJECT_6_SCOREBOARD_H
+
+
+class ScoreBoard {
+
+};
+
+
+#endif //INC_2020_1TERM_FINALPROJECT_6_SCOREBOARD_H
