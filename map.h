@@ -1,0 +1,14 @@
+//
+// Created by FURO on 2020-05-14.
+//
+
+#ifndef INC_2020_1TERM_FINALPROJECT_6_MAP_H
+#define INC_2020_1TERM_FINALPROJECT_6_MAP_H
+
+
+class map {
+
+};
+
+
+#endif //INC_2020_1TERM_FINALPROJECT_6_MAP_H
