@@ -3,23 +3,23 @@
 //
 #include "Map.h"
 #include "Wall.h"
+#include<ncurses.h>
+
 
 #ifndef INC_2020_1TERM_FINAL_PROJECT_6_SNAKE_H
 #define INC_2020_1TERM_FINAL_PROJECT_6_SNAKE_H
 
-
 class Snake {
 private:
     unsigned int size;
-    char direction;
-
+    int direction;
 public:
     void move();
 
     /*
      * Change the direction depends on user keypress.
      */
-    void changeDirection(char targetDirection);
+    void changeDirection(int targetDirection);
 
     /*
      * If status of meetWall is 1 or 2, means game over
@@ -29,17 +29,28 @@ public:
      */
     void event(Wall meetWall);
 
-    char getDirection();
-
+    int getDirection(){
+        return direction;
+    }
+    
+        
+    void setDirection(int dir){
+        direction = dir;
+    }
+    
     /*
      * decrease size from tail
      */
     void decreaseSize();
-
+        
     /*
      * increase size from head
      */
     void increaseSize();
+
+    /*
+    *  
+    */
 };
 
 
