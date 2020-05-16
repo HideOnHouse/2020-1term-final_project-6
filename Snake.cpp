@@ -7,31 +7,30 @@ void Snake::move(){
     keypad(stdscr,TRUE);
     
     while(true){
-        ch = getch();
+        ch = getch();        
+        // input equal direction will game over
         if(getDirection() == KEY_LEFT && ch == KEY_RIGHT){break;}
         else if(getDirection() == KEY_RIGHT && ch == KEY_LEFT){break;}
         else if(getDirection() == KEY_UP && ch == KEY_DOWN){break;}
         else if(getDirection() == KEY_DOWN && ch == KEY_UP){break;}
 
-
+        // change direction if input other direction
         if(getDirection() != ch){
             changeDirection(ch);
         }
+
+        // if input 'F1' game over
         if(ch == KEY_LEFT){
             printw("left");
-            setDirection(ch);
         }
         else if(ch==KEY_UP){
             printw("up");
-            setDirection(ch);
         }
         else if(ch==KEY_RIGHT){
             printw("right");
-            setDirection(ch);
         }
         else if(ch==KEY_DOWN){
-            printw("down");
-            setDirection(ch);   
+            printw("down");  
         }
         else if(ch==KEY_F(1)){
             printw("game over");

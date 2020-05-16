@@ -11,8 +11,8 @@
 
 class Snake {
 private:
-    unsigned int size;
-    int direction;
+    unsigned int size = 3;
+    int direction = KEY_LEFT;
 public:
     void move();
 
