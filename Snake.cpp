@@ -45,15 +45,15 @@ void Snake::changeDirection(int targetDirection){
 }
 
 void Snake::event(Wall meetWall){
-
+    //when meet wall except gate will game over
 }
 
 void Snake::decreaseSize(){
-
+    // when meet poison item size-1
 }
 
 void Snake::increaseSize(){
-
+    // when meet growth item size+1
 }
 
 int main(){
