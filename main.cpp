@@ -1,14 +1,10 @@
 //
-// Created by hideoncode on 5/14/20.
+// Created by hideoncode on 5/16/20.
 //
-
-#include <ncurses.h>
+#include "snake.h"
 
 int main() {
-    initscr();
-    printw("Hello World!");
-    refresh();
-    getch();
-    endwin();
+    SnakeClass s;
+    s.start();
     return 0;
 }

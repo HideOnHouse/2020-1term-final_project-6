@@ -1,0 +1,3 @@
+C:/Users/FURO/Documents/GitHub/SnakePractice/cmake-build-debug/CMakeFiles/SnakePractice.dir
+C:/Users/FURO/Documents/GitHub/SnakePractice/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/FURO/Documents/GitHub/SnakePractice/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,57 +1,45 @@
 //
-// Created by FURO on 2020-05-14.
+// Created by FURO on 2020-05-16.
 //
-#include "Map.h"
-#include "Wall.h"
-#include<ncurses.h>
 
+#ifndef SNAKEPRACTICE_SNAKE_H
+#define SNAKEPRACTICE_SNAKE_H
 
-#ifndef INC_2020_1TERM_FINAL_PROJECT_6_SNAKE_H
-#define INC_2020_1TERM_FINAL_PROJECT_6_SNAKE_H
+#include <vector>
+#include <cstdlib>
+#include <iostream>
 
-class Snake {
-private:
-    unsigned int size = 3;
-    int direction = KEY_LEFT;
+struct snakePart {
+    int x, y;
+
+    snakePart(int col, int row);
+
+    snakePart();
+};
+
+class SnakeClass {
+    int points, tick, maxWidth, maxHeight;
+    char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar;
+    bool getGrowth, getPoison;
+    snakePart growthItem;
+    snakePart poisonItem;
+    std::vector<snakePart> snake;
+
+    void putGrowth();
+
+    void putPoison();
+
+    bool collision();
+
+    void moveSnake();
+
 public:
-    void move();
+    SnakeClass();
 
-    /*
-     * Change the direction depends on user keypress.
-     */
-    void changeDirection(int targetDirection);
+    ~SnakeClass();
 
-    /*
-     * If status of meetWall is 1 or 2, means game over
-     * If status of meetWall is 3 or 4, means game over
-     * If status of meetWall is 5 or 6, means update size
-     * If status of meetWall is 7, means snake meet Gate;
-     */
-    void event(Wall meetWall);
-
-    int getDirection(){
-        return direction;
-    }
-    
-        
-    void setDirection(int dir){
-        direction = dir;
-    }
-    
-    /*
-     * decrease size from tail
-     */
-    void decreaseSize();
-        
-    /*
-     * increase size from head
-     */
-    void increaseSize();
-
-    /*
-    *  
-    */
+    void start();
 };
 
 
-#endif //INC_2020_1TERM_FINAL_PROJECT_6_SNAKE_H
+#endif //SNAKEPRACTICE_SNAKE_H
