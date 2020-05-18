@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Users/FURO/Documents/GitHub/SnakePractice/main.cpp" "C:/Users/FURO/Documents/GitHub/SnakePractice/cmake-build-debug/CMakeFiles/SnakePractice.dir/main.cpp.obj"
-  "C:/Users/FURO/Documents/GitHub/SnakePractice/snake.cpp" "C:/Users/FURO/Documents/GitHub/SnakePractice/cmake-build-debug/CMakeFiles/SnakePractice.dir/snake.cpp.obj"
+  "/home/hideoncode/CLionProjects/2020-1term-final_project-6/main.cpp" "/home/hideoncode/CLionProjects/2020-1term-final_project-6/cmake-build-debug/CMakeFiles/SnakePractice.dir/main.cpp.o"
+  "/home/hideoncode/CLionProjects/2020-1term-final_project-6/snake.cpp" "/home/hideoncode/CLionProjects/2020-1term-final_project-6/cmake-build-debug/CMakeFiles/SnakePractice.dir/snake.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

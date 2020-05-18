@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
-project(SnakePractice)
+project(2020_1term_final_project-6)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(SnakePractice main.cpp snake.cpp snake.h main.cpp)
+add_executable(2020_1term_final_project-6 main.cpp snake.cpp)
