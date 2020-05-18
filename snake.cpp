@@ -27,6 +27,46 @@ snakePart::snakePart() {
     y = 0;
 }
 
+
+
+void SnakeClass::displayScore() {
+
+    //write the points
+    move(3,maxHeight+13);
+    printw("%d", points);
+    refresh();   
+}
+
+bool SnakeClass::checkScore() {
+
+}
+
+void SnakeClass::initBoard() {
+     move(2, maxHeight+10);
+     addstr("Score Board");
+     move(3, maxHeight+10);
+     addstr("B:   (Current Length)/(Max Length)");//(Current Length)/(Max Length)
+     move(4, maxHeight+10);
+     addstr("+:   (Obtained Growth Items)");
+     move(5, maxHeight+10);    
+     addstr("-:   (Obtained Poision Items)");
+     move(6, maxHeight+10);    
+     addstr("G:   (Gate Used)");
+     move(9, maxHeight+10);    
+     addstr("Mission");
+     move(10, maxHeight+10);    
+     addstr("B:");
+     
+     move(10, maxHeight+13);
+     printw("%d",points);
+
+
+     move(11, maxHeight+10);    
+     addstr("+:");
+     move(12, maxHeight+10);    
+     addstr("-:");
+             
+}
 void SnakeClass::putGrowth() {
     while (1) {
         int tmpx = rand() % maxWidth + 1;
@@ -89,17 +129,15 @@ bool SnakeClass::collision() {
         getGrowth = true;
         putGrowth();
         points += 1;
-
+        displayScore();
         //Draw Score
-        move(maxHeight - 1, 0);
-        printw("%d", points);
+        // 
     } else if (snake[0].x == poisonItem.x && snake[0].y == poisonItem.y) {
         getPoison = true;
         putPoison();
         points -= 1;
         //Draw Score
-        move(maxHeight - 1, 0);
-        printw("%d", points);
+        displayScore();
     } else {
         getGrowth = false;
         getPoison = false;
@@ -191,6 +229,8 @@ SnakeClass::SnakeClass() {
     poisonItemChar = 'x';
     poisonItem.x = 0;
     poisonItem.y = 0;
+    strcpy(scoreBoardChar,"Score Board");
+
     for (int i = 0; i < 3; ++i) {
         snake.push_back(snakePart(maxWidth/2 + i, maxHeight/2));
     }
@@ -222,13 +262,12 @@ SnakeClass::SnakeClass() {
         }
     }
 
-    //write the points
-    move(maxHeight - 1, 0);
-    printw("%d", points);
     //draw the points
     move(growthItem.y, growthItem.x);
     addch(growthItemChar);
+    initBoard();
     refresh();
+    //displayScore();
 }
 
 SnakeClass::~SnakeClass() {
@@ -244,11 +283,17 @@ void SnakeClass::start() {
             printw("Game Over");
             break;
         }
-
+        //displayScore();
         moveSnake();
         if (direction == 'q') {
             break;
         }
+
+        // if(checkScore) {
+        //     move(maxWidth / 2 - 4, maxHeight / 2);
+        //     printw("Game Over");
+        //     break;
+        // }
         usleep(tick);
     }
 }

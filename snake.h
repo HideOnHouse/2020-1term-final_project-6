@@ -8,7 +8,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
-
+#include <cstring>
 struct snakePart {
     int x, y;
 
@@ -18,19 +18,22 @@ struct snakePart {
 };
 
 class SnakeClass {
+    int score;
+    int snakeLength, cntGate;
     int points, tick, maxWidth, maxHeight;
     char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar;
+    char scoreBoardChar[100];
     bool getGrowth, getPoison;
     snakePart growthItem;
     snakePart poisonItem;
     std::vector<snakePart> snake;
 
+    void initBoard();
+    void displayScore();
+    bool checkScore();
     void putGrowth();
-
     void putPoison();
-
     bool collision();
-
     void moveSnake();
 
 public:
