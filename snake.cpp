@@ -215,8 +215,8 @@ SnakeClass::SnakeClass() {
     noecho();
     curs_set(0);
 //    getmaxyx(stdscr, maxHeight, maxWidth);
-    maxHeight = 21;
-    maxWidth = 21;
+    maxHeight = 25;
+    maxWidth = 25;
 
     //init variables
     snakeHeadChar = '3';
