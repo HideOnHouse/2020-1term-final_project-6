@@ -243,7 +243,6 @@ void SnakeClass::moveSnake() {
         move(snake[snake.size() - 2].y, snake[snake.size() - 2].x);
         addch(' ');
         snake.pop_back();
-        snake.pop_back();
     }
 
     if (direction == 'l') {
