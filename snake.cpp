@@ -31,8 +31,12 @@ snakePart::snakePart() {
 void SnakeClass::displayScore() {
 
     //write the points
-    move(3, maxHeight + 13);
-    printw("%d", points);
+    move(3, screenHeight + 13);
+    printw("%d", snakeLength);
+    move(4, screenHeight + 13);
+    printw("%d", totalGrowth);
+    move(5, screenHeight + 13);
+    printw("%d", totalPoison);
     refresh();
 }
 
@@ -41,42 +45,50 @@ bool SnakeClass::checkScore() {
 }
 
 void SnakeClass::initBoard() {
-    move(2, maxHeight + 10);
+    move(2, screenHeight + 10);
     addstr("Score Board");
-    move(3, maxHeight + 10);
-    addstr("B:   (Current Length)/(Max Length)");//(Current Length)/(Max Length)
-    move(4, maxHeight + 10);
-    addstr("+:   (Obtained Growth Items)");
-    move(5, maxHeight + 10);
-    addstr("-:   (Obtained Poision Items)");
-    move(6, maxHeight + 10);
-    addstr("G:   (Gate Used)");
-    move(9, maxHeight + 10);
+    move(3, screenHeight + 10);
+    addstr("B: 3 (Current Length)/(Max Length)");//(Current Length)/(Max Length)
+    move(4, screenHeight + 10);
+    addstr("+: 0 (Obtained Growth Items)");
+    move(5, screenHeight + 10);
+    addstr("-: 0 (Obtained Poison Items)");
+    move(6, screenHeight + 10);
+    addstr("G: 0 (Gate Used)");
+    move(9, screenHeight + 10);
     addstr("Mission");
-    move(10, maxHeight + 10);
+    move(10, screenHeight + 10);
     addstr("B:");
 
-    move(10, maxHeight + 13);
+    move(10, screenHeight + 13);
     printw("%d", points);
 
 
-    move(11, maxHeight + 10);
+    move(11, screenHeight + 10);
     addstr("+:");
-    move(12, maxHeight + 10);
+    move(12, screenHeight + 10);
     addstr("-:");
 
 }
 
-void SnakeClass::putGrowth(int whichGrowth = rand() % 2) {
+void SnakeClass::putGrowth(int whichGrowth) {
     while (1) {
-        int tmpx = rand() % maxWidth + 1;
-        int tmpy = rand() % maxHeight + 1;
+        int tmpx = rand() % screenWidth + 1;
+        int tmpy = rand() % screenHeight + 1;
         for (int i = 0; i < snake.size(); ++i) {
             if (snake[i].x == tmpx && snake[i].y == tmpy) {
                 continue;
             }
         }
-        if (tmpx >= maxWidth - 2 || tmpy >= maxHeight - 3) {
+        for (int j = 0; j < 2; ++j) {
+            if (tmpx == growthItems[j].x && tmpy == growthItems[j].y) {
+                continue;
+            }
+            if (tmpx == poisonItems[j].x && tmpy == poisonItems[j].y) {
+                continue;
+            }
+        }
+        if (tmpx >= screenWidth - 2 || tmpy >= screenHeight - 3) {
             continue;
         }
 
@@ -93,16 +105,24 @@ void SnakeClass::putGrowth(int whichGrowth = rand() % 2) {
     refresh();
 }
 
-void SnakeClass::putPoison(int whichPoison = rand() % 2) {
+void SnakeClass::putPoison(int whichPoison) {
     while (1) {
-        int tmpx = rand() % maxWidth + 1;
-        int tmpy = rand() % maxHeight + 1;
+        int tmpx = rand() % screenWidth + 1;
+        int tmpy = rand() % screenHeight + 1;
         for (int i = 0; i < snake.size(); ++i) {
             if (snake[i].x == tmpx && snake[i].y == tmpy) {
                 continue;
             }
         }
-        if (tmpx >= maxWidth - 2 || tmpy >= maxHeight - 3) {
+        for (int j = 0; j < 2; ++j) {
+            if (tmpx == growthItems[j].x && tmpy == growthItems[j].y) {
+                continue;
+            }
+            if (tmpx == poisonItems[j].x && tmpy == poisonItems[j].y) {
+                continue;
+            }
+        }
+        if (tmpx >= screenWidth - 2 || tmpy >= screenHeight - 3) {
             continue;
         }
         if (poisonItems[whichPoison].x == tmpx && poisonItems[whichPoison].y == tmpy) {
@@ -119,43 +139,9 @@ void SnakeClass::putPoison(int whichPoison = rand() % 2) {
 }
 
 bool SnakeClass::collision() {
-    // start put item
-    if (growthCount + poisonCount < 3) {
-        int fullItem = rand() % 2;
-        if (fullItem) {
-            while (growthCount + poisonCount == 3) {
-                if (growthCount == 2) {
-                    putPoison();
-                } else if (poisonCount == 2) {
-                    putGrowth();
-                } else {
-                    int temp = rand() % 2;
-                    if (temp == 0) {
-                        putGrowth();
-                    } else {
-                        putPoison();
-                    }
-                }
-            }
-        } else {
-            if (growthCount == 2) {
-                putPoison();
-            } else if (poisonCount == 2) {
-                putGrowth();
-            } else {
-                int temp = rand() % 2;
-                if (temp == 0) {
-                    putGrowth();
-                } else {
-                    putPoison();
-                }
-            }
-        }
-    }
-    // end put item
 
-    // start is snake collision or too short
-    if (snake[0].x == 0 || snake[0].x == maxWidth - 2 || snake[0].y == 0 || snake[0].y == maxHeight - 2) {
+    // check if snake is too short is collision with wall
+    if (snake[0].x == 0 || snake[0].x == screenWidth - 2 || snake[0].y == 0 || snake[0].y == screenHeight - 2) {
         return true;
     }
     for (int i = 2; i < snake.size(); ++i) {
@@ -166,35 +152,46 @@ bool SnakeClass::collision() {
     if (snakeLength < 3) {
         return true;
     }
-    // end is snake collision or too short
+
 
     // get something?
     for (int j = 0; j < 2; ++j) {
-
+        // get growth?
         if (snake[0].x == growthItems[j].x && snake[0].y == growthItems[j].y) {
             getGrowth = true;
-            int temp = rand() % 2;
-            if (temp) {
-                putGrowth(j);
+            if (growthCount == 2) {
+                putPoison(j);
+                growthCount -= 2;
+                poisonCount -= 1;
             } else {
-                putPoison();
+                putGrowth(j);
+                growthCount -= 1;
+                poisonCount -= 2;
             }
             points += 1;
+            totalGrowth += 1;
             snakeLength += 1;
             displayScore();
+            break;
 
             // get poison?
         } else if (snake[0].x == poisonItems[j].x && snake[0].y == poisonItems[j].y) {
             getPoison = true;
-            int temp = rand() % 2;
-            if (temp) {
+            if (poisonCount == 2) {
                 putGrowth(j);
+                growthCount -= 1;
+                poisonCount -= 2;
             } else {
-                putPoison();
+                putPoison(j);
+                growthCount -= 2;
+                poisonCount -= 1;
             }
+            totalPoison += 1;
             points -= 1;
             snakeLength -= 1;
             displayScore();
+            break;
+
         } else {
             getGrowth = false;
             getPoison = false;
@@ -204,8 +201,8 @@ bool SnakeClass::collision() {
 }
 
 void SnakeClass::moveSnake() {
-    int tmp = getch();
-    switch (tmp) {
+    int currentKey = getch();
+    switch (currentKey) {
         case KEY_LEFT:
             if (direction != 'r') {
                 direction = 'l';
@@ -230,19 +227,19 @@ void SnakeClass::moveSnake() {
             direction = 'q';
             break;
     }
+
     if (!getGrowth) {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
         addch(' ');
-        refresh();
         snake.pop_back();
+        refresh();
     }
 
     if (getPoison) {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
         addch(' ');
-        move(snake[snake.size() - 2].y, snake[snake.size() - 2].x);
-        addch(' ');
         snake.pop_back();
+        refresh();
     }
 
     if (direction == 'l') {
@@ -254,10 +251,15 @@ void SnakeClass::moveSnake() {
     } else if (direction == 'd') {
         snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y + 1));
     }
+
+    //draw snake, check poison
     for (int i = 0; i < snake.size(); ++i) {
         move(snake[i].y, snake[i].x);
         if (i == 0) {
             addch(snakeHeadChar);
+        } else if (i == snake.size() && getPoison) {
+            addch(' ');
+            snake.pop_back();
         } else {
             addch(snakeBodyChar);
         }
@@ -271,14 +273,16 @@ SnakeClass::SnakeClass() {
     keypad(stdscr, true);
     noecho();
     curs_set(0);
-//    getmaxyx(stdscr, maxHeight, maxWidth);
-    maxHeight = 21;
-    maxWidth = 21;
+//    getmaxyx(stdscr, screenHeight, screenWidth);
+    screenHeight = 30;
+    screenWidth = 30;
 
     //init variables
     snakeLength = 3;
     growthCount = 0;
     poisonCount = 0;
+    totalGrowth = 0;
+    totalPoison = 0;
 
     // start init item location
     for (int m = 0; m < 2; ++m) {
@@ -298,7 +302,7 @@ SnakeClass::SnakeClass() {
     strcpy(scoreBoardChar, "Score Board");
 
     for (int i = 0; i < 3; ++i) {
-        snake.push_back(snakePart(maxWidth / 2 + i, maxHeight / 2));
+        snake.push_back(snakePart(screenWidth / 2 + i, screenHeight / 2));
     }
     points = 0;
     tick = 200000;
@@ -306,15 +310,14 @@ SnakeClass::SnakeClass() {
     getPoison = false;
     direction = 'l';
     srand(time(0));
-    putGrowth();
 
     //draw the edge
-    for (int j = 0; j < maxWidth - 1; ++j) {
-        move(maxHeight - 2, j);
+    for (int j = 0; j < screenWidth - 1; ++j) {
+        move(screenHeight - 2, j);
         addch(wallChar);
     }
-    for (int k = 0; k < maxHeight - 1; ++k) {
-        move(k, maxWidth - 2);
+    for (int k = 0; k < screenHeight - 1; ++k) {
+        move(k, screenWidth - 2);
         addch(wallChar);
     }
 
@@ -329,8 +332,9 @@ SnakeClass::SnakeClass() {
     }
 
     //draw the items
-    putGrowth();
-    putPoison();
+    putGrowth(0);
+    putGrowth(1);
+    putPoison(0);
     initBoard();
     refresh();
     //displayScore();
@@ -345,7 +349,7 @@ SnakeClass::~SnakeClass() {
 void SnakeClass::start() {
     while (1) {
         if (collision()) {
-            move(maxWidth / 2 - 4, maxHeight / 2);
+            move(screenWidth / 2 - 4, screenHeight / 2);
             printw("Game Over");
             break;
         }
@@ -356,7 +360,7 @@ void SnakeClass::start() {
         }
 
         // if(checkScore) {
-        //     move(maxWidth / 2 - 4, maxHeight / 2);
+        //     move(screenWidth / 2 - 4, screenHeight / 2);
         //     printw("Game Over");
         //     break;
         // }

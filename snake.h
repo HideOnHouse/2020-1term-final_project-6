@@ -19,8 +19,8 @@ struct snakePart {
 
 class SnakeClass {
     int score;
-    int snakeLength, cntGate, growthCount, poisonCount;
-    int points, tick, maxWidth, maxHeight;
+    int snakeLength, cntGate, growthCount, poisonCount, totalGrowth, totalPoison;
+    int points, tick, screenWidth, screenHeight;
     char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar;
     char scoreBoardChar[100];
     bool getGrowth, getPoison;
