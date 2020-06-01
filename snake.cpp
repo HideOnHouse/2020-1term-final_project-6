@@ -43,6 +43,11 @@
  * - Distinct snakeHead and snakeBody (solved)
  */
 
+/*
+ *해결해야할 버그
+ * - 아이템을 먹었을 때 해당 아이템이 제대로 작동하지 않는경우가 있는데, 이러면 총 Item개수가 줄어듬.
+ */ 
+
 #include <time.h>
 #include <zconf.h>
 #include "snake.h"
@@ -169,6 +174,7 @@ void SnakeClass::displayScore() {
     printw("%d", totalGrowth);
     move(5, screenHeight + 13);
     printw("%d", totalPoison);
+    move(7, screenHeight + 13);
     refresh();
 }
 
@@ -187,6 +193,9 @@ void SnakeClass::initBoard() {
     addstr("-: 0 (Obtained Poison Items)");
     move(6, screenHeight + 10);
     addstr("G: 0 (Gate Used)");
+    move(7, screenHeight + 10);
+    addstr("T: 0 (Gate Used)");
+    
     move(9, screenHeight + 10);
     addstr("Mission");
     move(10, screenHeight + 10);
@@ -200,6 +209,8 @@ void SnakeClass::initBoard() {
     addstr("+:");
     move(12, screenHeight + 10);
     addstr("-:");
+
+    
 
 }
 
@@ -285,21 +296,28 @@ bool SnakeClass::collision() {
         return true;
     }
 
-
+    
     // get something?
     for (int j = 0; j < 2; ++j) {
+        srand((unsigned int)time(NULL));
         // get growth?
         if (snake[0].x == growthItems[j].x && snake[0].y == growthItems[j].y) {
+            growthItems[j].x = -1;growthItems[j].y = -1;
             getGrowth = true;
-            if (growthCount == 2) {
-                putPoison(j);
-                growthCount -= 2;
-                poisonCount -= 1;
-            } else {
+            growthCount-=1;
+            if(growthCount==0){
                 putGrowth(j);
-                growthCount -= 1;
-                poisonCount -= 2;
+                
             }
+            else if(growthCount == 1 && rand()%2 == 1){
+                putGrowth(j);
+                
+            }
+            else{
+                putPoison(j);
+                
+            }
+            
             points += 1;
             totalGrowth += 1;
             snakeLength += 1;
@@ -308,16 +326,22 @@ bool SnakeClass::collision() {
 
             // get poison?
         } else if (snake[0].x == poisonItems[j].x && snake[0].y == poisonItems[j].y) {
+            poisonItems[j].x = -1;poisonItems[j].y = -1;
+            poisonCount-=1;
             getPoison = true;
-            if (poisonCount == 2) {
-                putGrowth(j);
-                growthCount -= 1;
-                poisonCount -= 2;
-            } else {
+            if(poisonCount==0){
                 putPoison(j);
-                growthCount -= 2;
-                poisonCount -= 1;
+                
             }
+            else if(poisonCount == 1 && rand()%2 == 0){
+                putGrowth(j);
+               
+            }
+            else{
+                putPoison(j);
+               
+            }
+            
             totalPoison += 1;
             points -= 1;
             snakeLength -= 1;
