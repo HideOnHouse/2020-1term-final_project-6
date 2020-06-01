@@ -112,26 +112,27 @@ SnakePart는 snake, item의 생성, 변경에 사용된다. growthItem, poisonIt
 ```
 스테이지를 그리는 부분이다. 아직 immune Wall은 구현하지 못했다
 Constructor에서 2차원 배열(Stage)를 받아와서 그리는 걸로 업드레이드 할 예정
-### 5.2. displayScore()
+### 5.2. void displayScore()
 Description deferred.
-### 5.3. checkScore()
+### 5.3. void checkScore()
 Description deferred.
-### 5.4. initBoard()
+### 5.4. void initBoard()
 Description deferred.
-### 5.5. putGrowth()
+### 5.5. void putGrowth()
 - snake, item, wall과 겹치지 않는 좌표를 생성한 후에(겹치지 않을 때까지) 해당하는 좌표에 growthItemChar 출력
 - growthCount를 1 증가시킨다
 - `refresh()`함수 호출
-### 5.6. putPoison()
+### 5.6. void putPoison()
 - snake, item, wall과 겹치지 않는 좌표를 생성한 후에(겹치지 않을 때까지) 해당하는 좌표에 poisonItemChar 출력
 - poisonCount를 1 증가시킨다
 - `refresh()`함수 호출
-### 5.7. collision()
+### 5.7. bool collision()
 - 게임이 종료되는 상태가 발생했는지, 아이템을 얻었는지 검사하는 함수
 - 아이템을 검사할때, growthItems, poisonItems 원소들의 모든 좌표를 검사한다
 - growthCount, poisonCount부분이 굉장히 복잡한데, 수정이 시급
 - 멤버 변수 getGrowth, getPoison을 변경한다
-### 5.8. moveSnake()
+- 게임이 종료되는 상태가 발생하면 true, 그렇지 않으면 false를 리턴한다
+### 5.8. void moveSnake()
 - 유저의 인풋을 받아 방향을 결정한다
 - 현재 진행방향의 반대로 입력하면 입력을 무시하지만, 게임 룰에 위배된다
 - getGrowth, getPoison을 여기에서 검사하고, 포션의 행동을 실행시킨다
