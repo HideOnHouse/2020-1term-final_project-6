@@ -1,7 +1,7 @@
 # 2020-1st semester snake game project Team-6
 2020학년도 1학기 기말프로젝트 C++ 언어로 Snake Game 만들기를 위한 레포지토리입니다.
 
-##To-Do
+## To-Do
 > 1. Implement Gate
 > 2. Implement Goal
 > 3. Add stage by revise constructor, stage can be represented as 2-dimension array
