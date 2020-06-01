@@ -1,4 +1,0 @@
-/home/hideoncode/clion-2020.1.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/hideoncode/CLionProjects/2020-1term-final_project-6
--- Configuring done
--- Generating done
--- Build files have been written to: /home/hideoncode/CLionProjects/2020-1term-final_project-6/cmake-build-debug

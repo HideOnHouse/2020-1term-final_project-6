@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/SnakePractice.dir/main.cpp.o CMakeFiles/SnakePractice.dir/snake.cpp.o  -o SnakePractice 
