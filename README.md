@@ -69,7 +69,7 @@
 - Poison Item을 5개 획득하면 게임 종료
 - Gate를 5번 사용하면 게임 종료
 - 2분을 버티면 다음 스테이지로
-##5. About Class
+## 5. About Class
 ### 5.1. Constructor
 `initscr()`: ncurses에서 스크린 사용 선언  
 `nodelay(stdscr, true)`: stdscr(Standard Screen)은 사용자의 입력을 기다리지 않음  
