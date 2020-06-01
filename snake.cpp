@@ -1,15 +1,46 @@
-//
-// Created by HideOnHouse on 2020-05-16.
-//
+/*
+ * Game Rule
+ * (1)
+1.진행방향 반대(tail)로 이동시 실패
+2.snake는 벽을 통과 x, 자신의 몸도 통과x
+3.head방향 이동은 일정시간에 의해 이동
+
+(2) ITEM
+1. growth item은 몸의 길이 증가(진행방향으로)
+2. poison item은 감소(꼬리방향 감소) 단, 몸의 길이가 3보다 작아지면 실패
+3.item의 출현은 snake body가 있지 않은 곳 임의의 위치에 출현, 출현 후 일정시간이 지나면 사라지고 다른곳에 나타남, 동시에 나타날 수 있는 item의 수는 최대 3개
+
+(3)  GATE
+1. gate는 두 개가 한 쌍. 한 번에 한 쌍만 나타난다.
+2. gate는 겹치지 않는다.
+3. gate는 임의의 벽에서 나타난다
+4. gate를 통해 나갈 수 있는 진출로가 여러개이면 진행방향이 1순위가 진행방향이 막혀있으면 시계방향순으로 순위가 정해진다
+5. gate의 출현 방법은 알아서 결정한다. 정해진게 없음.  ex)게임 시작 후 일정 시간 지나고 나오게 하기, 몸의 길이가 어느 정도 커지면 나오게 하기)
+
+(4) WALL
+1. 모든 벽은 snake가 통과x
+1. 벽은 두 가지 종류 gate로 변할 수 있나 없나
+(wall - gate o, Immune wall - gate x)
+
+(5) 점수 계산
+1.몸의 최대길이
+2.획득한 growth item,poison item의 수
+3.게임중 사용한 gate의 수
+4.게임시간(seconds)
+위 4가지의 목표치를 만들고 해당 목표치 달성 시 게임 종료(이것 또한 몇개를 달성해야 종료할지는 알아서 정하기)
+ */
+
 /*
  * TODO List
- * - Distinct snakeHead and snakeBody (solved)
+ * - Implement Goal
  * - Implement gate
- * - Implement scoreBoard
- * - Add Obstacle
- * - Put item randomly 정(max item 3)정
+ * - Add Obstacle -> Same as add Stage
+ * - Revise collision method -> get the Character of current snakeHead's coordinate
+ * - add stage -> Revise Constructor
  * - popup Press any button to start when start game
- * - add stage
+ * - Implement scoreBoard (solved)
+ * - Put item randomly (max item 3) (solved)
+ * - Distinct snakeHead and snakeBody (solved)
  */
 
 #include <time.h>
@@ -27,6 +58,107 @@ snakePart::snakePart() {
     y = 0;
 }
 
+
+SnakeClass::SnakeClass() {
+    initscr();
+    nodelay(stdscr, true); // the program not wait until the user press a key
+    keypad(stdscr, true);
+    noecho();
+    curs_set(0);
+//    getmaxyx(stdscr, screenHeight, screenWidth);
+    screenHeight = 30;
+    screenWidth = 30;
+
+    //init variables
+    snakeLength = 3;
+    growthCount = 0;
+    poisonCount = 0;
+    totalGrowth = 0;
+    totalPoison = 0;
+
+    // start init item location
+    for (int m = 0; m < 2; ++m) {
+        growthItems[m].x = 0;
+        growthItems[m].y = 0;
+        poisonItems[m].x = 0;
+        poisonItems[m].y = 0;
+    }
+    // end init item location
+
+    snakeHeadChar = '3';
+    snakeBodyChar = '4';
+    wallChar = '1';
+    immuneWallChar = '2';
+    growthItemChar = '*';
+    poisonItemChar = 'x';
+    points = 0;
+    tick = 200000; // Refresh Rate(Frequency)
+    getGrowth = false;
+    getPoison = false;
+    direction = 'l';
+    srand(time(0));
+    strcpy(scoreBoardChar, "Score Board");
+
+    // draw initial snake
+    for (int i = 0; i < 3; ++i) {
+        snake.push_back(snakePart(screenWidth / 2 + i, screenHeight / 2));
+    }
+    // end draw initial snake
+
+
+    //draw the edge -> Will be upgraded draw the stage
+    for (int j = 0; j < screenWidth - 1; ++j) {
+        move(screenHeight - 2, j);
+        addch(wallChar);
+    }
+    for (int k = 0; k < screenHeight - 1; ++k) {
+        move(k, screenWidth - 2);
+        addch(wallChar);
+    }
+
+    //Initial - draw the snake
+    for (int l = 0; l < snake.size(); ++l) {
+        move(snake[l].y, snake[l].x);
+        if (l == 0) {
+            addch(snakeHeadChar);
+        } else {
+            addch(snakeBodyChar);
+        }
+    }
+    // end draw edge
+
+    //draw initial items
+    putGrowth(0);
+    putGrowth(1);
+    putPoison(0);
+    // end draw initial item
+
+    initBoard();
+    refresh();
+    //displayScore();
+}
+
+void SnakeClass::start() {
+    while (1) {
+        if (collision()) {
+            move(screenWidth / 2 - 4, screenHeight / 2);
+            printw("Game Over");
+            break;
+        }
+        //displayScore();
+        moveSnake();
+        if (direction == 'q') {
+            break;
+        }
+
+        // if(checkScore) {
+        //     move(screenWidth / 2 - 4, screenHeight / 2);
+        //     printw("Game Over");
+        //     break;
+        // }
+        usleep(tick);
+    }
+}
 
 void SnakeClass::displayScore() {
 
@@ -267,103 +399,8 @@ void SnakeClass::moveSnake() {
     refresh();
 }
 
-SnakeClass::SnakeClass() {
-    initscr();
-    nodelay(stdscr, true); // the program not wait until the user press a key
-    keypad(stdscr, true);
-    noecho();
-    curs_set(0);
-//    getmaxyx(stdscr, screenHeight, screenWidth);
-    screenHeight = 30;
-    screenWidth = 30;
-
-    //init variables
-    snakeLength = 3;
-    growthCount = 0;
-    poisonCount = 0;
-    totalGrowth = 0;
-    totalPoison = 0;
-
-    // start init item location
-    for (int m = 0; m < 2; ++m) {
-        growthItems[m].x = 0;
-        growthItems[m].y = 0;
-        poisonItems[m].x = 0;
-        poisonItems[m].y = 0;
-    }
-    // end init item location
-
-    snakeHeadChar = '3';
-    snakeBodyChar = '4';
-    wallChar = '1';
-    immuneWallChar = '2';
-    growthItemChar = '*';
-    poisonItemChar = 'x';
-    strcpy(scoreBoardChar, "Score Board");
-
-    for (int i = 0; i < 3; ++i) {
-        snake.push_back(snakePart(screenWidth / 2 + i, screenHeight / 2));
-    }
-    points = 0;
-    tick = 200000;
-    getGrowth = false;
-    getPoison = false;
-    direction = 'l';
-    srand(time(0));
-
-    //draw the edge
-    for (int j = 0; j < screenWidth - 1; ++j) {
-        move(screenHeight - 2, j);
-        addch(wallChar);
-    }
-    for (int k = 0; k < screenHeight - 1; ++k) {
-        move(k, screenWidth - 2);
-        addch(wallChar);
-    }
-
-    //Initial - draw the snake
-    for (int l = 0; l < snake.size(); ++l) {
-        move(snake[l].y, snake[l].x);
-        if (l == 0) {
-            addch(snakeHeadChar);
-        } else {
-            addch(snakeBodyChar);
-        }
-    }
-
-    //draw the items
-    putGrowth(0);
-    putGrowth(1);
-    putPoison(0);
-    initBoard();
-    refresh();
-    //displayScore();
-}
-
 SnakeClass::~SnakeClass() {
     nodelay(stdscr, false);
     getch();
     endwin();
-}
-
-void SnakeClass::start() {
-    while (1) {
-        if (collision()) {
-            move(screenWidth / 2 - 4, screenHeight / 2);
-            printw("Game Over");
-            break;
-        }
-        //displayScore();
-        moveSnake();
-        if (direction == 'q') {
-            break;
-        }
-
-        // if(checkScore) {
-        //     move(screenWidth / 2 - 4, screenHeight / 2);
-        //     printw("Game Over");
-        //     break;
-        // }
-        usleep(tick);
-    }
 }
