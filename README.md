@@ -90,12 +90,12 @@
 SnakePart는 snake, item의 생성, 변경에 사용된다. growthItem, poisonItem은 SnakePart로 구성된 2 크기의 array
 ```
     //draw the edge -> Will be upgraded draw the stage
-    for (int j = 0; j < screenWidth - 1; ++j) {
-        move(screenHeight - 2, j);
+    for (int j = 0; j < stageWidth - 1; ++j) {
+        move(stageHeight - 2, j);
         addch(wallChar);
     }
-    for (int k = 0; k < screenHeight - 1; ++k) {
-        move(k, screenWidth - 2);
+    for (int k = 0; k < stageHeight - 1; ++k) {
+        move(k, stageWidth - 2);
         addch(wallChar);
     }
 
