@@ -46,9 +46,10 @@
 /*
  *해결해야할 버그
  * - 아이템을 먹었을 때 해당 아이템이 제대로 작동하지 않는경우가 있는데, 이러면 총 Item개수가 줄어듬.
- */ 
+ */
 
-#include <time.h>
+#include <ctime>
+#include <random>
 #include <zconf.h>
 #include "snake.h"
 #include "ncurses.h"
@@ -70,9 +71,8 @@ SnakeClass::SnakeClass() {
     keypad(stdscr, true);
     noecho();
     curs_set(0);
-//    getmaxyx(stdscr, screenHeight, screenWidth);
-    screenHeight = 30;
-    screenWidth = 30;
+    stageHeight = 25;
+    stageWidth = 25;
 
     //init variables
     snakeLength = 3;
@@ -92,32 +92,32 @@ SnakeClass::SnakeClass() {
 
     snakeHeadChar = '3';
     snakeBodyChar = '4';
-    wallChar = '1';
+    wallChar = '@';
     immuneWallChar = '2';
     growthItemChar = '*';
     poisonItemChar = 'x';
     points = 0;
-    tick = 200000; // Refresh Rate(Frequency)
+    tick = 150000; // Refresh Rate(Frequency)
     getGrowth = false;
     getPoison = false;
     direction = 'l';
-    srand(time(0));
     strcpy(scoreBoardChar, "Score Board");
 
     // draw initial snake
     for (int i = 0; i < 3; ++i) {
-        snake.push_back(snakePart(screenWidth / 2 + i, screenHeight / 2));
+        snake.emplace_back(stageWidth / 2 + i, stageHeight / 2);
     }
     // end draw initial snake
 
 
     //draw the edge -> Will be upgraded draw the stage
-    for (int j = 0; j < screenWidth - 1; ++j) {
-        move(screenHeight - 2, j);
+    for (int j = 0; j < stageWidth - 1; j++) {
+        move(stageHeight - 2, j);
         addch(wallChar);
     }
-    for (int k = 0; k < screenHeight - 1; ++k) {
-        move(k, screenWidth - 2);
+
+    for (int k = 0; k < stageHeight - 1; k++) {
+        move(k, stageWidth - 1);
         addch(wallChar);
     }
 
@@ -146,7 +146,7 @@ SnakeClass::SnakeClass() {
 void SnakeClass::start() {
     while (1) {
         if (collision()) {
-            move(screenWidth / 2 - 4, screenHeight / 2);
+            move(stageWidth / 2 - 4, stageHeight / 2);
             printw("Game Over");
             break;
         }
@@ -157,7 +157,7 @@ void SnakeClass::start() {
         }
 
         // if(checkScore) {
-        //     move(screenWidth / 2 - 4, screenHeight / 2);
+        //     move(stageWidth / 2 - 4, stageHeight / 2);
         //     printw("Game Over");
         //     break;
         // }
@@ -165,16 +165,30 @@ void SnakeClass::start() {
     }
 }
 
-void SnakeClass::displayScore() {
+void SnakeClass::displayScore() const {
 
     //write the points
-    move(3, screenHeight + 13);
+    move(3, stageHeight + 13);
     printw("%d", snakeLength);
-    move(4, screenHeight + 13);
+    move(4, stageHeight + 13);
     printw("%d", totalGrowth);
-    move(5, screenHeight + 13);
+    move(5, stageHeight + 13);
     printw("%d", totalPoison);
-    move(7, screenHeight + 13);
+    move(7, stageHeight + 13);
+    move(13, stageHeight + 13);
+
+    // for debug
+    printw("current growth count %d", growthCount);
+    move(14, stageHeight + 13);
+    printw("current poison count %d", poisonCount);
+    for (int i = 0; i < 2; ++i) {
+        move(i + 15, stageHeight + 13);
+        printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
+        move(i + 15 + 3, stageHeight + 13);
+        printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
+    }
+    // end for debug
+
     refresh();
 }
 
@@ -182,64 +196,62 @@ bool SnakeClass::checkScore() {
 
 }
 
-void SnakeClass::initBoard() {
-    move(2, screenHeight + 10);
+void SnakeClass::initBoard() const {
+    move(2, stageHeight + 10);
     addstr("Score Board");
-    move(3, screenHeight + 10);
-    addstr("B: 3 (Current Length)/(Max Length)");//(Current Length)/(Max Length)
-    move(4, screenHeight + 10);
+    move(3, stageHeight + 10);
+    addstr("B: 3 (Current Length)/(Max Length)");
+    move(4, stageHeight + 10);
     addstr("+: 0 (Obtained Growth Items)");
-    move(5, screenHeight + 10);
+    move(5, stageHeight + 10);
     addstr("-: 0 (Obtained Poison Items)");
-    move(6, screenHeight + 10);
+    move(6, stageHeight + 10);
     addstr("G: 0 (Gate Used)");
-    move(7, screenHeight + 10);
+    move(7, stageHeight + 10);
     addstr("T: 0 (Gate Used)");
-    
-    move(9, screenHeight + 10);
+
+    move(9, stageHeight + 10);
     addstr("Mission");
-    move(10, screenHeight + 10);
+    move(10, stageHeight + 10);
     addstr("B:");
 
-    move(10, screenHeight + 13);
+    move(10, stageHeight + 13);
     printw("%d", points);
 
 
-    move(11, screenHeight + 10);
+    move(11, stageHeight + 10);
     addstr("+:");
-    move(12, screenHeight + 10);
+    move(12, stageHeight + 10);
     addstr("-:");
 
-    
 
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
+    std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
     while (1) {
-        int tmpx = rand() % screenWidth + 1;
-        int tmpy = rand() % screenHeight + 1;
+        int tempX = xLimit(gen);
+        int tempY = yLimit(gen);
+
         for (int i = 0; i < snake.size(); ++i) {
-            if (snake[i].x == tmpx && snake[i].y == tmpy) {
+            if (snake[i].x == tempX && snake[i].y == tempY) {
                 continue;
             }
         }
         for (int j = 0; j < 2; ++j) {
-            if (tmpx == growthItems[j].x && tmpy == growthItems[j].y) {
+            if (tempX == growthItems[j].x && tempY == growthItems[j].y) {
                 continue;
             }
-            if (tmpx == poisonItems[j].x && tmpy == poisonItems[j].y) {
+            if (tempX == poisonItems[j].x && tempY == poisonItems[j].y) {
                 continue;
             }
-        }
-        if (tmpx >= screenWidth - 2 || tmpy >= screenHeight - 3) {
-            continue;
         }
 
-        if (growthItems[whichGrowth].x == tmpx && growthItems[whichGrowth].y == tmpy) {
-            continue;
-        }
-        growthItems[whichGrowth].x = tmpx;
-        growthItems[whichGrowth].y = tmpy;
+        growthItems[whichGrowth].x = tempX;
+        growthItems[whichGrowth].y = tempY;
         break;
     }
     move(growthItems[whichGrowth].y, growthItems[whichGrowth].x);
@@ -249,30 +261,29 @@ void SnakeClass::putGrowth(int whichGrowth) {
 }
 
 void SnakeClass::putPoison(int whichPoison) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
+    std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
     while (1) {
-        int tmpx = rand() % screenWidth + 1;
-        int tmpy = rand() % screenHeight + 1;
+        int tempX = xLimit(gen);
+        int tempY = yLimit(gen);
         for (int i = 0; i < snake.size(); ++i) {
-            if (snake[i].x == tmpx && snake[i].y == tmpy) {
+            if (snake[i].x == tempX && snake[i].y == tempY) {
                 continue;
             }
         }
         for (int j = 0; j < 2; ++j) {
-            if (tmpx == growthItems[j].x && tmpy == growthItems[j].y) {
+            if (tempX == growthItems[j].x && tempY == growthItems[j].y) {
                 continue;
             }
-            if (tmpx == poisonItems[j].x && tmpy == poisonItems[j].y) {
+            if (tempX == poisonItems[j].x && tempY == poisonItems[j].y) {
                 continue;
             }
         }
-        if (tmpx >= screenWidth - 2 || tmpy >= screenHeight - 3) {
-            continue;
-        }
-        if (poisonItems[whichPoison].x == tmpx && poisonItems[whichPoison].y == tmpy) {
-            continue;
-        }
-        poisonItems[whichPoison].x = tmpx;
-        poisonItems[whichPoison].y = tmpy;
+
+        poisonItems[whichPoison].x = tempX;
+        poisonItems[whichPoison].y = tempY;
         break;
     }
     move(poisonItems[whichPoison].y, poisonItems[whichPoison].x);
@@ -284,7 +295,7 @@ void SnakeClass::putPoison(int whichPoison) {
 bool SnakeClass::collision() {
 
     // check if snake is too short is collision with wall
-    if (snake[0].x == 0 || snake[0].x == screenWidth - 2 || snake[0].y == 0 || snake[0].y == screenHeight - 2) {
+    if (snake[0].x == 0 || snake[0].x == stageWidth - 2 || snake[0].y == 0 || snake[0].y == stageHeight - 2) {
         return true;
     }
     for (int i = 2; i < snake.size(); ++i) {
@@ -296,28 +307,27 @@ bool SnakeClass::collision() {
         return true;
     }
 
-    
+
     // get something?
     for (int j = 0; j < 2; ++j) {
-        srand((unsigned int)time(NULL));
+
         // get growth?
         if (snake[0].x == growthItems[j].x && snake[0].y == growthItems[j].y) {
-            growthItems[j].x = -1;growthItems[j].y = -1;
+            growthItems[j].x = -1;
+            growthItems[j].y = -1;
             getGrowth = true;
-            growthCount-=1;
-            if(growthCount==0){
+            growthCount -= 1;
+
+            if (growthCount == 0) {
                 putGrowth(j);
-                
-            }
-            else if(growthCount == 1 && rand()%2 == 1){
+
+            } else if (growthCount == 1 && rand() % 2 == 1) {
                 putGrowth(j);
-                
-            }
-            else{
+
+            } else {
                 putPoison(j);
-                
             }
-            
+
             points += 1;
             totalGrowth += 1;
             snakeLength += 1;
@@ -326,22 +336,21 @@ bool SnakeClass::collision() {
 
             // get poison?
         } else if (snake[0].x == poisonItems[j].x && snake[0].y == poisonItems[j].y) {
-            poisonItems[j].x = -1;poisonItems[j].y = -1;
-            poisonCount-=1;
+            poisonItems[j].x = -1;
+            poisonItems[j].y = -1;
+            poisonCount -= 1;
             getPoison = true;
-            if(poisonCount==0){
+
+            if (poisonCount == 0) {
                 putPoison(j);
-                
-            }
-            else if(poisonCount == 1 && rand()%2 == 0){
+
+            } else if (poisonCount == 1 && rand() % 2 == 0) {
                 putGrowth(j);
-               
-            }
-            else{
+
+            } else {
                 putPoison(j);
-               
             }
-            
+
             totalPoison += 1;
             points -= 1;
             snakeLength -= 1;
@@ -420,6 +429,8 @@ void SnakeClass::moveSnake() {
             addch(snakeBodyChar);
         }
     }
+    getPoison = false;
+    getGrowth = false;
     refresh();
 }
 

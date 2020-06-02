@@ -20,7 +20,7 @@ struct snakePart {
 class SnakeClass {
     int score;
     int snakeLength, cntGate, growthCount, poisonCount, totalGrowth, totalPoison;
-    int points, tick, screenWidth, screenHeight;
+    int points, tick, stageWidth, stageHeight;
     char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar;
     char scoreBoardChar[100];
     bool getGrowth, getPoison;
@@ -28,8 +28,8 @@ class SnakeClass {
     snakePart poisonItems[2];
     std::vector<snakePart> snake;
 
-    void initBoard();
-    void displayScore();
+    void initBoard() const;
+    void displayScore() const;
     bool checkScore();
     void putGrowth(int whichGrowth);
     void putPoison(int whichPoison);
