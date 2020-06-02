@@ -4,20 +4,24 @@
 1.진행방향 반대(tail)로 이동시 실패
 2.snake는 벽을 통과 x, 자신의 몸도 통과x
 3.head방향 이동은 일정시간에 의해 이동
+
 (2) ITEM
 1. growth item은 몸의 길이 증가(진행방향으로)
 2. poison item은 감소(꼬리방향 감소) 단, 몸의 길이가 3보다 작아지면 실패
 3.item의 출현은 snake body가 있지 않은 곳 임의의 위치에 출현, 출현 후 일정시간이 지나면 사라지고 다른곳에 나타남, 동시에 나타날 수 있는 item의 수는 최대 3개
+
 (3)  GATE
 1. gate는 두 개가 한 쌍. 한 번에 한 쌍만 나타난다.
 2. gate는 겹치지 않는다.
 3. gate는 임의의 벽에서 나타난다
 4. gate를 통해 나갈 수 있는 진출로가 여러개이면 진행방향이 1순위가 진행방향이 막혀있으면 시계방향순으로 순위가 정해진다
 5. gate의 출현 방법은 알아서 결정한다. 정해진게 없음.  ex)게임 시작 후 일정 시간 지나고 나오게 하기, 몸의 길이가 어느 정도 커지면 나오게 하기)
+
 (4) WALL
 1. 모든 벽은 snake가 통과x
 1. 벽은 두 가지 종류 gate로 변할 수 있나 없나
 (wall - gate o, Immune wall - gate x)
+
 (5) 점수 계산
 1.몸의 최대길이
 2.획득한 growth item,poison item의 수
@@ -76,12 +80,6 @@ SnakeClass::SnakeClass() {
     poisonCount = 0;
     totalGrowth = 0;
     totalPoison = 0;
-
-    snakeMaxLength=3;
-    missionGrowth=5;
-    missionPoision=3;
-    missionGate=5;
-    endScore = 10;
 
     // start init item location
     for (int m = 0; m < 2; ++m) {
@@ -195,13 +193,7 @@ void SnakeClass::displayScore() const {
 }
 
 bool SnakeClass::checkScore() {
-    // 미션달성시 true반환하여 게임 끝내기 
-    if(points==endScore){//일단 목표 growth=5개 달성시 종료 
-        return true;
-    }
-    else{
-        return false;
-    }
+
 }
 
 void SnakeClass::initBoard() const {
@@ -327,7 +319,6 @@ void SnakeClass::meetGate(int meetGateIdx){
             }
 }
 
-
 bool SnakeClass::collision() {
 
     // check if snake is too short is collision with wall
@@ -344,13 +335,11 @@ bool SnakeClass::collision() {
     }
     // meet gate
     for(int j = 0;j<2;j++){
-        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y&&j==0)meetGate(j);
+        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y)meetGate(j);
     }
-
 
     // get something?
     for (int j = 0; j < 2; ++j) {
-
         // get growth?
         if (snake[0].x == growthItems[j].x && snake[0].y == growthItems[j].y) {
             growthItems[j].x = -1;
@@ -401,9 +390,6 @@ bool SnakeClass::collision() {
             getGrowth = false;
             getPoison = false;
         }
-    }
-    if(snakeLength>=snakeMaxLength){
-        snakeMaxLength=snakeLength; // snake 최대길이 설정 
     }
     return false;
 }
