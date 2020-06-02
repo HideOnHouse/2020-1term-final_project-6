@@ -158,19 +158,11 @@ void SnakeClass::start() {
             break;
         }
 
-<<<<<<< HEAD
-        if(checkScore()==true) {
-            move(screenWidth / 2 - 4, screenHeight / 2);
-            printw("Game Over");
-            break;
-        }
-=======
         // if(checkScore) {
         //     move(stageWidth / 2 - 4, stageHeight / 2);
         //     printw("Game Over");
         //     break;
         // }
->>>>>>> 51bac10b1ae8ca6f067b664694d20abb83cd19da
         usleep(tick);
     }
 }
@@ -178,15 +170,9 @@ void SnakeClass::start() {
 void SnakeClass::displayScore() const {
 
     //write the points
-<<<<<<< HEAD
-    move(3, screenHeight + 13);
-    printw("%d", snakeLength/snakeMaxLength);
-    move(4, screenHeight + 13);
-=======
     move(3, stageHeight + 13);
     printw("%d", snakeLength);
     move(4, stageHeight + 13);
->>>>>>> 51bac10b1ae8ca6f067b664694d20abb83cd19da
     printw("%d", totalGrowth);
     move(5, stageHeight + 13);
     printw("%d", totalPoison);
@@ -240,23 +226,6 @@ void SnakeClass::initBoard() const {
     move(10, stageHeight + 13);
     printw("%d", points);
 
-<<<<<<< HEAD
-    move(11, screenHeight + 10);//Growth 미션 개수 
-    addstr("+:");
-    move(11, screenHeight + 13);
-    printw("%d", missionGrowth);
-    
-    move(12, screenHeight + 10); //포이즌 미션 개수 
-    addstr("-:");
-    move(12, screenHeight + 13);
-    printw("%d", missionPoision);
-    
-    move(13, screenHeight + 10);//게이트 미션 개수
-    addstr("G:");
-    move(13, screenHeight + 13);
-    printw("%d", missionGate);
-    
-=======
 
     move(11, stageHeight + 10);
     addstr("+:");
@@ -264,7 +233,6 @@ void SnakeClass::initBoard() const {
     addstr("-:");
 
 
->>>>>>> 51bac10b1ae8ca6f067b664694d20abb83cd19da
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
@@ -332,6 +300,34 @@ void SnakeClass::putPoison(int whichPoison) {
     refresh();
 }
 
+void SnakeClass::meetGate(int meetGateIdx){
+    int otherGate = (meetGateIdx+1)%2;
+    if(direction == 'l'){
+                if(gate[otherGate].x-1 != '@')direction = 'l';
+                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@')direction = 'u';
+                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@')direction = 'r';
+                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@')direction = 'd';
+            }else if(direction == 'u'){
+                if(gate[1].y+1 != '@')direction = 'u';
+                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@')direction = 'r';
+                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@')direction = 'd';
+                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@')direction = 'l';
+            }
+            else if(direction == 'r'){
+                if(gate[1].x+1 != '@')direction = 'r';
+                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@')direction = 'd';
+                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@')direction = 'l';
+                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@')direction = 'u';
+            }
+            else if(direction == 'd'){
+                if(gate[otherGate].y-1 != '@')direction = 'd';
+                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@')direction = 'l';
+                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@')direction = 'u';
+                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@')direction = 'r';
+            }
+}
+
+
 bool SnakeClass::collision() {
 
     // check if snake is too short is collision with wall
@@ -345,6 +341,10 @@ bool SnakeClass::collision() {
     }
     if (snakeLength < 3) {
         return true;
+    }
+    // meet gate
+    for(int j = 0;j<2;j++){
+        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y&&j==0)meetGate(j);
     }
 
 

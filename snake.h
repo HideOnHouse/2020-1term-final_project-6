@@ -25,10 +25,12 @@ class SnakeClass {
     bool getGrowth, getPoison;
     int snakeMaxLength;
     int endScore,missionGrowth,missionPoision,missionGate;
+    snakePart gate[2];
     snakePart growthItems[2];
     snakePart poisonItems[2];
     std::vector<snakePart> snake;
 
+    void meetGate(int meetGateIdx);
     void initBoard() const;
     void displayScore() const;
     bool checkScore();
