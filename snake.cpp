@@ -4,24 +4,20 @@
 1.진행방향 반대(tail)로 이동시 실패
 2.snake는 벽을 통과 x, 자신의 몸도 통과x
 3.head방향 이동은 일정시간에 의해 이동
-
 (2) ITEM
 1. growth item은 몸의 길이 증가(진행방향으로)
 2. poison item은 감소(꼬리방향 감소) 단, 몸의 길이가 3보다 작아지면 실패
 3.item의 출현은 snake body가 있지 않은 곳 임의의 위치에 출현, 출현 후 일정시간이 지나면 사라지고 다른곳에 나타남, 동시에 나타날 수 있는 item의 수는 최대 3개
-
 (3)  GATE
 1. gate는 두 개가 한 쌍. 한 번에 한 쌍만 나타난다.
 2. gate는 겹치지 않는다.
 3. gate는 임의의 벽에서 나타난다
 4. gate를 통해 나갈 수 있는 진출로가 여러개이면 진행방향이 1순위가 진행방향이 막혀있으면 시계방향순으로 순위가 정해진다
 5. gate의 출현 방법은 알아서 결정한다. 정해진게 없음.  ex)게임 시작 후 일정 시간 지나고 나오게 하기, 몸의 길이가 어느 정도 커지면 나오게 하기)
-
 (4) WALL
 1. 모든 벽은 snake가 통과x
 1. 벽은 두 가지 종류 gate로 변할 수 있나 없나
 (wall - gate o, Immune wall - gate x)
-
 (5) 점수 계산
 1.몸의 최대길이
 2.획득한 growth item,poison item의 수
@@ -80,6 +76,12 @@ SnakeClass::SnakeClass() {
     poisonCount = 0;
     totalGrowth = 0;
     totalPoison = 0;
+
+    snakeMaxLength=3;
+    missionGrowth=5;
+    missionPoision=3;
+    missionGate=5;
+    endScore = 10;
 
     // start init item location
     for (int m = 0; m < 2; ++m) {
@@ -156,11 +158,11 @@ void SnakeClass::start() {
             break;
         }
 
-        // if(checkScore) {
-        //     move(screenWidth / 2 - 4, screenHeight / 2);
-        //     printw("Game Over");
-        //     break;
-        // }
+        if(checkScore()==true) {
+            move(screenWidth / 2 - 4, screenHeight / 2);
+            printw("Game Over");
+            break;
+        }
         usleep(tick);
     }
 }
@@ -169,7 +171,7 @@ void SnakeClass::displayScore() {
 
     //write the points
     move(3, screenHeight + 13);
-    printw("%d", snakeLength);
+    printw("%d", snakeLength/snakeMaxLength);
     move(4, screenHeight + 13);
     printw("%d", totalGrowth);
     move(5, screenHeight + 13);
@@ -179,7 +181,13 @@ void SnakeClass::displayScore() {
 }
 
 bool SnakeClass::checkScore() {
-
+    // 미션달성시 true반환하여 게임 끝내기 
+    if(points==endScore){//일단 목표 growth=5개 달성시 종료 
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 void SnakeClass::initBoard() {
@@ -204,14 +212,21 @@ void SnakeClass::initBoard() {
     move(10, screenHeight + 13);
     printw("%d", points);
 
-
-    move(11, screenHeight + 10);
+    move(11, screenHeight + 10);//Growth 미션 개수 
     addstr("+:");
-    move(12, screenHeight + 10);
-    addstr("-:");
-
+    move(11, screenHeight + 13);
+    printw("%d", missionGrowth);
     
-
+    move(12, screenHeight + 10); //포이즌 미션 개수 
+    addstr("-:");
+    move(12, screenHeight + 13);
+    printw("%d", missionPoision);
+    
+    move(13, screenHeight + 10);//게이트 미션 개수
+    addstr("G:");
+    move(13, screenHeight + 13);
+    printw("%d", missionGate);
+    
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
@@ -353,6 +368,9 @@ bool SnakeClass::collision() {
             getPoison = false;
         }
     }
+    if(snakeLength>=snakeMaxLength){
+        snakeMaxLength=snakeLength; // snake 최대길이 설정 
+    }
     return false;
 }
 
@@ -423,80 +441,6 @@ void SnakeClass::moveSnake() {
     refresh();
 }
 
-<<<<<<< HEAD
-SnakeClass::SnakeClass() {
-    initscr();
-    nodelay(stdscr, true); // the program not wait until the user press a key
-    keypad(stdscr, true);
-    noecho();
-    curs_set(0);
-//    getmaxyx(stdscr, maxHeight, maxWidth);
-    maxHeight = 25;
-    maxWidth = 25;
-
-    //init variables
-    snakeLength = 3;
-    growthCount = 0;
-    poisonCount = 0;
-
-    // start init item location
-    for (int m = 0; m < 2; ++m) {
-        growthItems[m].x = 0;
-        growthItems[m].y = 0;
-        poisonItems[m].x = 0;
-        poisonItems[m].y = 0;
-    }
-    // end init item location
-
-    snakeHeadChar = '3';
-    snakeBodyChar = '4';
-    wallChar = '1';
-    immuneWallChar = '2';
-    growthItemChar = '*';
-    poisonItemChar = 'x';
-    strcpy(scoreBoardChar, "Score Board");
-
-    for (int i = 0; i < 3; ++i) {
-        snake.push_back(snakePart(maxWidth / 2 + i, maxHeight / 2));
-    }
-    points = 0;
-    tick = 200000;
-    getGrowth = false;
-    getPoison = false;
-    direction = 'l';
-    srand(time(0));
-    putGrowth();
-
-    //draw the edge
-    for (int j = 0; j < maxWidth - 1; ++j) {
-        move(maxHeight - 2, j);
-        addch(wallChar);
-    }
-    for (int k = 0; k < maxHeight - 1; ++k) {
-        move(k, maxWidth - 2);
-        addch(wallChar);
-    }
-
-    //Initial - draw the snake
-    for (int l = 0; l < snake.size(); ++l) {
-        move(snake[l].y, snake[l].x);
-        if (l == 0) {
-            addch(snakeHeadChar);
-        } else {
-            addch(snakeBodyChar);
-        }
-    }
-
-    //draw the items
-    putGrowth();
-    putPoison();
-    initBoard();
-    refresh();
-    //displayScore();
-}
-
-=======
->>>>>>> 572c234ed010a15119c700dac755bd56b5809dfb
 SnakeClass::~SnakeClass() {
     nodelay(stdscr, false);
     getch();

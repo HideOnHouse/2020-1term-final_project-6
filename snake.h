@@ -18,12 +18,13 @@ struct snakePart {
 };
 
 class SnakeClass {
-    int score;
     int snakeLength, cntGate, growthCount, poisonCount, totalGrowth, totalPoison;
     int points, tick, screenWidth, screenHeight;
     char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar;
     char scoreBoardChar[100];
     bool getGrowth, getPoison;
+    int snakeMaxLength;
+    int endScore,missionGrowth,missionPoision,missionGate;
     snakePart growthItems[2];
     snakePart poisonItems[2];
     std::vector<snakePart> snake;
