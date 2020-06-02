@@ -80,6 +80,12 @@ SnakeClass::SnakeClass() {
     poisonCount = 0;
     totalGrowth = 0;
     totalPoison = 0;
+    snakeMaxLength=3;
+    missionGrowth=5;
+    missionPoision=3;
+    missionGate=5;
+    endScore = 5;
+
 
     // start init item location
     for (int m = 0; m < 2; ++m) {
@@ -156,11 +162,11 @@ void SnakeClass::start() {
             break;
         }
 
-        // if(checkScore) {
-        //     move(stageWidth / 2 - 4, stageHeight / 2);
-        //     printw("Game Over");
-        //     break;
-        // }
+        if(checkScore()==true) {
+            move(stageWidth / 2 - 4, stageHeight / 2);
+            printw("Game Over");
+            break;
+        }
         usleep(tick);
     }
 }
@@ -175,13 +181,13 @@ void SnakeClass::displayScore() const {
     move(5, stageHeight + 13);
     printw("%d", totalPoison);
     move(7, stageHeight + 13);
-    move(13, stageHeight + 13);
+    move(16, stageHeight + 13);
 
     // for debug
     printw("current growth count %d", growthCount);
-    move(14, stageHeight + 13);
+    move(17, stageHeight + 13);
     printw("current poison count %d", poisonCount);
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i<2; ++i) {
         move(i + 15, stageHeight + 13);
         printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
         move(i + 15 + 3, stageHeight + 13);
@@ -193,7 +199,10 @@ void SnakeClass::displayScore() const {
 }
 
 bool SnakeClass::checkScore() {
-
+    if(points==endScore)
+        return true;
+    else
+        return false;
 }
 
 void SnakeClass::initBoard() const {
@@ -214,16 +223,23 @@ void SnakeClass::initBoard() const {
     addstr("Mission");
     move(10, stageHeight + 10);
     addstr("B:");
-
     move(10, stageHeight + 13);
-    printw("%d", points);
+    printw("%d", endScore);
 
 
     move(11, stageHeight + 10);
     addstr("+:");
+    move(11, stageHeight + 13);
+    printw("%d", missionGrowth);
     move(12, stageHeight + 10);
     addstr("-:");
+    move(12, stageHeight + 13);
+    printw("%d", missionPoision);
 
+    move(13, stageHeight + 10);
+    addstr("G:");
+    move(13, stageHeight + 13);
+    printw("%d", missionGate);
 
 }
 
