@@ -96,6 +96,7 @@ SnakeClass::SnakeClass() {
     }
     // end init item location
 
+    gateWall = 'g';
     snakeHeadChar = '3';
     snakeBodyChar = '4';
     wallChar = '@';
@@ -118,13 +119,27 @@ SnakeClass::SnakeClass() {
 
     //draw the edge -> Will be upgraded draw the stage
     for (int j = 0; j < stageWidth - 1; j++) {
-        move(stageHeight - 2, j);
-        addch(wallChar);
+        if(j == 16){
+            move(stageHeight - 2, j);
+            addch(gateWall);
+            gate[0].x = j;gate[0].y = stageWidth-1;
+        }
+        else{
+            move(stageHeight - 2, j);
+            addch(wallChar);
+        }
     }
 
     for (int k = 0; k < stageHeight - 1; k++) {
-        move(k, stageWidth - 1);
-        addch(wallChar);
+        if(k==9){
+            move(k, stageWidth - 1);
+            addch(gateWall);   
+            gate[1].x=stageWidth-1;gate[1].y=k; 
+        }
+        else{
+            move(k, stageWidth - 1);
+            addch(wallChar);
+        }
     }
 
     //Initial - draw the snake
@@ -193,6 +208,10 @@ void SnakeClass::displayScore() const {
         move(i + 15 + 3, stageHeight + 13);
         printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
     }
+    move(20,stageHeight+13);
+    printw("gate[0] : %d, %d",gate[0].x,gate[0].y);
+    move(21,stageHeight+13);
+    printw("gate[1] : %d, %d",gate[1].x,gate[1].y);
     // end for debug
 
     refresh();
@@ -311,33 +330,82 @@ void SnakeClass::putPoison(int whichPoison) {
 void SnakeClass::meetGate(int meetGateIdx){
     int otherGate = (meetGateIdx+1)%2;
     if(direction == 'l'){
-                if(gate[otherGate].x-1 != '@')direction = 'l';
-                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@')direction = 'u';
-                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@')direction = 'r';
-                else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@')direction = 'd';
-            }else if(direction == 'u'){
-                if(gate[1].y+1 != '@')direction = 'u';
-                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@')direction = 'r';
-                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@')direction = 'd';
-                else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@')direction = 'l';
+            if(gate[otherGate].x-1 != '@'){
+                direction = 'l';
+                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
             }
-            else if(direction == 'r'){
-                if(gate[1].x+1 != '@')direction = 'r';
-                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@')direction = 'd';
-                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@')direction = 'l';
-                else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@')direction = 'u';
+            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@'){
+                direction = 'u';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
             }
-            else if(direction == 'd'){
-                if(gate[otherGate].y-1 != '@')direction = 'd';
-                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@')direction = 'l';
-                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@')direction = 'u';
-                else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@')direction = 'r';
+            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@'){
+                direction = 'r';
+                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
             }
+            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@'){
+                direction = 'd';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
+            }
+        }else if(direction == 'u'){
+            if(gate[1].y+1 != '@'){
+                direction = 'u';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
+            }
+            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@'){
+                direction = 'r';
+                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
+            }
+            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@'){
+                direction = 'd';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
+            }
+            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@'){
+                direction = 'l';
+                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
+            }
+        }
+        else if(direction == 'r'){
+            if(gate[1].x+1 != '@'){
+                direction = 'r';
+                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
+            }
+            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@'){
+                direction = 'd';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
+            }
+            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@'){
+                direction = 'l';
+                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
+            }
+            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@'){
+                direction = 'u';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
+            }
+        }
+        else if(direction == 'd'){
+            if(gate[otherGate].y-1 != '@'){
+                direction = 'd';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
+            }
+            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@'){
+                direction = 'l';
+                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
+            }
+            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@'){
+                direction = 'u';
+                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
+            }
+            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@'){
+                direction = 'r';
+                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
+            }
+        }
 }
 
 bool SnakeClass::collision() {
 
     // check if snake is too short is collision with wall
+    
     if (snake[0].x == 0 || snake[0].x == stageWidth - 2 || snake[0].y == 0 || snake[0].y == stageHeight - 2) {
         return true;
     }
@@ -349,10 +417,7 @@ bool SnakeClass::collision() {
     if (snakeLength < 3) {
         return true;
     }
-    // meet gate
-    for(int j = 0;j<2;j++){
-        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y)meetGate(j);
-    }
+    
 
     // get something?
     for (int j = 0; j < 2; ++j) {
@@ -437,6 +502,13 @@ void SnakeClass::moveSnake() {
             direction = 'q';
             break;
     }
+    // meet gate
+    for(int j = 0;j<2;j++){
+        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y){
+            
+            meetGate(j);
+        }
+    }
 
     if (!getGrowth) {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
@@ -451,6 +523,7 @@ void SnakeClass::moveSnake() {
         snake.pop_back();
         refresh();
     }
+    
 
     if (direction == 'l') {
         snake.insert(snake.begin(), snakePart(snake[0].x - 1, snake[0].y));
@@ -474,6 +547,10 @@ void SnakeClass::moveSnake() {
             addch(snakeBodyChar);
         }
     }
+    move(22,stageHeight+13);
+    printw("snake : %d, %d",snake[0].x,snake[0].y);
+    move(23,stageHeight+13);
+    printw("current direction: %c",direction);
     getPoison = false;
     getGrowth = false;
     refresh();
