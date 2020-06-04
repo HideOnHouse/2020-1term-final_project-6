@@ -146,11 +146,7 @@ SnakeClass::SnakeClass() {
     //Initial - draw the snake
     for (int l = 0; l < snake.size(); ++l) {
         move(snake[l].y, snake[l].x);
-        if (l == 0) {
-            addch(snakeHeadChar);
-        } else {
-            addch(snakeBodyChar);
-        }
+        addch(l == 0 ? snakeHeadChar : snakeBodyChar);
     }
     // end draw edge
 
@@ -166,7 +162,7 @@ SnakeClass::SnakeClass() {
 }
 
 void SnakeClass::start() {
-    while (1) {
+    while (true) {
         if (collision()) {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("Game Over");
@@ -178,7 +174,7 @@ void SnakeClass::start() {
             break;
         }
 
-        if (checkScore() == true) {
+        if (checkScore()) {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("Game Over");
             break;
@@ -218,11 +214,8 @@ void SnakeClass::displayScore() const {
     refresh();
 }
 
-bool SnakeClass::checkScore() {
-    if (points == endScore)
-        return true;
-    else
-        return false;
+bool SnakeClass::checkScore() const {
+    return points == endScore;
 }
 
 void SnakeClass::initBoard() const {
@@ -268,12 +261,12 @@ void SnakeClass::putGrowth(int whichGrowth) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
     std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
-    while (1) {
+    while (true) {
         int tempX = xLimit(gen);
         int tempY = yLimit(gen);
 
-        for (int i = 0; i < snake.size(); ++i) {
-            if (snake[i].x == tempX && snake[i].y == tempY) {
+        for (auto & i : snake) {
+            if (i.x == tempX && i.y == tempY) {
                 continue;
             }
         }
@@ -301,11 +294,11 @@ void SnakeClass::putPoison(int whichPoison) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
     std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
-    while (1) {
+    while (true) {
         int tempX = xLimit(gen);
         int tempY = yLimit(gen);
-        for (int i = 0; i < snake.size(); ++i) {
-            if (snake[i].x == tempX && snake[i].y == tempY) {
+        for (auto & i : snake) {
+            if (i.x == tempX && i.y == tempY) {
                 continue;
             }
         }
@@ -479,11 +472,13 @@ bool SnakeClass::collision() {
             growthItems[j].y = -1;
             getGrowth = true;
             growthCount -= 1;
-
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> dis(0, 1);
             if (growthCount == 0) {
                 putGrowth(j);
 
-            } else if (growthCount == 1 && rand() % 2 == 1) {
+            } else if (growthCount == 1 && dis(gen)) {
                 putGrowth(j);
 
             } else {
@@ -502,11 +497,13 @@ bool SnakeClass::collision() {
             poisonItems[j].y = -1;
             poisonCount -= 1;
             getPoison = true;
-
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> dis(0, 1);
             if (poisonCount == 0) {
                 putPoison(j);
 
-            } else if (poisonCount == 1 && rand() % 2 == 0) {
+            } else if (poisonCount == 1 && dis(gen)) {
                 putGrowth(j);
 
             } else {
