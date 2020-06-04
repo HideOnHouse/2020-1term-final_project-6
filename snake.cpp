@@ -20,7 +20,7 @@
 (4) WALL
 1. 모든 벽은 snake가 통과x
 1. 벽은 두 가지 종류 gate로 변할 수 있나 없나
-(wall - gate o, Immune wall - gate x)
+(wall - gatePair o, Immune wall - gatePair x)
 
 (5) 점수 계산
 1.몸의 최대길이
@@ -33,7 +33,7 @@
 /*
  * TODO List
  * - Implement Goal
- * - Implement gate
+ * - Implement gatePair
  * - Add Obstacle -> Same as add Stage
  * - Revise collision method -> get the Character of current snakeHead's coordinate
  * - add stage -> Revise Constructor
@@ -43,10 +43,6 @@
  * - Distinct snakeHead and snakeBody (solved)
  */
 
-/*
- *해결해야할 버그
- * - 아이템을 먹었을 때 해당 아이템이 제대로 작동하지 않는경우가 있는데, 이러면 총 Item개수가 줄어듬.
- */
 
 #include <ctime>
 #include <random>
@@ -64,6 +60,19 @@ snakePart::snakePart() {
     y = 0;
 }
 
+gatePart::gatePart() {
+    x = 0;
+    y = 0;
+    doorX = 0;
+    doorY = 0;
+}
+
+gatePart::gatePart(int x, int y, int doorX, int doorY) {
+    x = x;
+    y = y;
+    doorX = doorX;
+    doorY = doorY;
+}
 
 SnakeClass::SnakeClass() {
     initscr();
@@ -80,33 +89,38 @@ SnakeClass::SnakeClass() {
     poisonCount = 0;
     totalGrowth = 0;
     totalPoison = 0;
-    snakeMaxLength=3;
-    missionGrowth=5;
-    missionPoision=3;
-    missionGate=5;
+    snakeMaxLength = 3;
+    missionGrowth = 5;
+    missionPoison = 3;
+    missionGate = 5;
     endScore = 5;
 
 
-    // start init item location
+    // start init item location, gate location
     for (int m = 0; m < 2; ++m) {
         growthItems[m].x = 0;
         growthItems[m].y = 0;
         poisonItems[m].x = 0;
         poisonItems[m].y = 0;
+        gatePair[m].x = 0;
+        gatePair[m].y = 0;
+        gatePair[m].doorX = 0;
+        gatePair[m].doorY = 0;
     }
     // end init item location
 
-    gateWall = 'g';
     snakeHeadChar = '3';
     snakeBodyChar = '4';
-    wallChar = '@';
+    wallChar = '1';
     immuneWallChar = '2';
     growthItemChar = '*';
     poisonItemChar = 'x';
+    gateChar = 'G';
     points = 0;
     tick = 150000; // Refresh Rate(Frequency)
     getGrowth = false;
     getPoison = false;
+    meetGate = -1;
     direction = 'l';
     strcpy(scoreBoardChar, "Score Board");
 
@@ -119,28 +133,15 @@ SnakeClass::SnakeClass() {
 
     //draw the edge -> Will be upgraded draw the stage
     for (int j = 0; j < stageWidth - 1; j++) {
-        if(j == 16){
-            move(stageHeight - 2, j);
-            addch(gateWall);
-            gate[0].x = j;gate[0].y = stageWidth-1;
-        }
-        else{
-            move(stageHeight - 2, j);
-            addch(wallChar);
-        }
+        move(stageHeight - 2, j);
+        addch(wallChar);
     }
 
     for (int k = 0; k < stageHeight - 1; k++) {
-        if(k==9){
-            move(k, stageWidth - 1);
-            addch(gateWall);   
-            gate[1].x=stageWidth-1;gate[1].y=k; 
-        }
-        else{
-            move(k, stageWidth - 1);
-            addch(wallChar);
-        }
+        move(k, stageWidth - 1);
+        addch(wallChar);
     }
+
 
     //Initial - draw the snake
     for (int l = 0; l < snake.size(); ++l) {
@@ -153,11 +154,11 @@ SnakeClass::SnakeClass() {
     }
     // end draw edge
 
-    //draw initial items
+    //draw initial items, gate
     putGrowth(0);
     putGrowth(1);
     putPoison(0);
-    // end draw initial item
+    // end draw initial item, gate
 
     initBoard();
     refresh();
@@ -177,7 +178,7 @@ void SnakeClass::start() {
             break;
         }
 
-        if(checkScore()==true) {
+        if (checkScore() == true) {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("Game Over");
             break;
@@ -202,23 +203,23 @@ void SnakeClass::displayScore() const {
     printw("current growth count %d", growthCount);
     move(17, stageHeight + 13);
     printw("current poison count %d", poisonCount);
-    for (int i = 0; i<2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         move(i + 15, stageHeight + 13);
         printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
         move(i + 15 + 3, stageHeight + 13);
         printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
     }
-    move(20,stageHeight+13);
-    printw("gate[0] : %d, %d",gate[0].x,gate[0].y);
-    move(21,stageHeight+13);
-    printw("gate[1] : %d, %d",gate[1].x,gate[1].y);
+    move(20, stageHeight + 13);
+    printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
+    move(21, stageHeight + 13);
+    printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
     // end for debug
 
     refresh();
 }
 
 bool SnakeClass::checkScore() {
-    if(points==endScore)
+    if (points == endScore)
         return true;
     else
         return false;
@@ -253,7 +254,7 @@ void SnakeClass::initBoard() const {
     move(12, stageHeight + 10);
     addstr("-:");
     move(12, stageHeight + 13);
-    printw("%d", missionPoision);
+    printw("%d", missionPoison);
 
     move(13, stageHeight + 10);
     addstr("G:");
@@ -327,97 +328,148 @@ void SnakeClass::putPoison(int whichPoison) {
     refresh();
 }
 
-void SnakeClass::meetGate(int meetGateIdx){
-    int otherGate = (meetGateIdx+1)%2;
-    if(direction == 'l'){
-            if(gate[otherGate].x-1 != '@'){
-                direction = 'l';
-                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
-            }
-            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@'){
-                direction = 'u';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
-            }
-            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@'){
-                direction = 'r';
-                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
-            }
-            else if(gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@'){
-                direction = 'd';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
-            }
-        }else if(direction == 'u'){
-            if(gate[1].y+1 != '@'){
-                direction = 'u';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
-            }
-            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 != '@'){
-                direction = 'r';
-                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
-            }
-            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@'){
-                direction = 'd';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
-            }
-            else if(gate[otherGate].y+1 == '@' && gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@'){
-                direction = 'l';
-                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
+void SnakeClass::putGate() {
+    for (auto &k : gatePair) {
+        move(k.y, k.x);
+        addch(wallChar);
+    }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(0, 100);
+    int gateIndex = 0;
+    while (gateIndex < 2) {
+        for (int i = 0; i < stageWidth; ++i) {
+            for (int j = 0; j < stageHeight; ++j) {
+                move(j, i);
+                if (inch() == wallChar) {
+                    if (dis(gen) == 5) {
+                        gatePair[gateIndex].x = i;
+                        gatePair[gateIndex].y = j;
+                        addch(gateChar);
+                        gateIndex += 1;
+                    }
+                }
             }
         }
-        else if(direction == 'r'){
-            if(gate[1].x+1 != '@'){
-                direction = 'r';
-                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
-            }
-            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 != '@'){
-                direction = 'd';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
-            }
-            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@'){
-                direction = 'l';
-                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
-            }
-            else if(gate[otherGate].x+1 == '@' && gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@'){
-                direction = 'u';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
-            }
-        }
-        else if(direction == 'd'){
-            if(gate[otherGate].y-1 != '@'){
-                direction = 'd';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y-1; 
-            }
-            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 != '@'){
-                direction = 'l';
-                snake[0].x =gate[otherGate].x-1;snake[0].y = gate[otherGate].y;
-            }
-            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 != '@'){
-                direction = 'u';
-                snake[0].x = gate[otherGate].x;snake[0].y = gate[otherGate].y+1; 
-            }
-            else if(gate[otherGate].y-1 == '@' && gate[otherGate].x-1 == '@' && gate[otherGate].y+1 == '@'){
-                direction = 'r';
-                snake[0].x = gate[otherGate].x+1;snake[0].y = gate[otherGate].y; 
+    } // end while
+} // end putGate
+
+void SnakeClass::findWayOut(int whichGate) {
+    gatePart targetGate = gatePair[whichGate];
+    if (direction == 'l') {
+        move(targetGate.y, targetGate.x - 1);
+        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
+            targetGate.doorX = targetGate.x - 1;
+            targetGate.doorY = targetGate.y;
+        } else {
+            move(targetGate.y - 1, targetGate.x);
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y - 1 > 0) {
+                targetGate.doorX = targetGate.x;
+                targetGate.doorY = targetGate.y - 1;
+            } else {
+                move(targetGate.y, targetGate.x + 1);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                    targetGate.x + 1 < stageWidth - 1) {
+                    targetGate.doorX = targetGate.x + 1;
+                    targetGate.doorY = targetGate.y;
+                    direction = 'r';
+                } else {
+                    move(targetGate.y + 1, targetGate.x);
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y + 1;
+                }
             }
         }
+    } else if (direction == 'u') {
+        move(targetGate.y - 1, targetGate.x);
+        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y - 1 > 0) {
+            targetGate.doorX = targetGate.x;
+            targetGate.doorY = targetGate.y - 1;
+        } else {
+            move(targetGate.y, targetGate.x + 1);
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                targetGate.x + 1 < stageWidth - 1) {
+                targetGate.doorX = targetGate.x + 1;
+                targetGate.doorY = targetGate.y;
+            } else {
+                move(targetGate.y + 1, targetGate.x);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                    targetGate.y + 1 < stageHeight - 1) {
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y + 1;
+                    direction = 'd';
+                } else {
+                    move(targetGate.y, targetGate.x - 1);
+                    targetGate.doorX = targetGate.x - 1;
+                    targetGate.doorY = targetGate.y;
+                }
+            }
+        }
+    } else if (direction == 'r') {
+        move(targetGate.y, targetGate.x + 1);
+        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x + 1 < stageWidth - 1) {
+            targetGate.doorX = targetGate.x + 1;
+            targetGate.doorY = targetGate.y;
+        } else {
+            move(targetGate.y + 1, targetGate.x);
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y + 1 < stageHeight - 1) {
+                targetGate.doorX = targetGate.x;
+                targetGate.doorY = targetGate.y + 1;
+            } else {
+                move(targetGate.y, targetGate.x - 1);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
+                    targetGate.doorX = targetGate.x - 1;
+                    targetGate.doorY = targetGate.y;
+                    direction = 'l';
+                } else {
+                    move(targetGate.y - 1, targetGate.x);
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y - 1;
+                }
+            }
+        }
+    } else if (direction == 'd') {
+        move(targetGate.y + 1, targetGate.x);
+        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y + 1 < stageHeight - 1) {
+            targetGate.doorX = targetGate.x;
+            targetGate.doorY = targetGate.y + 1;
+        } else {
+            move(targetGate.y, targetGate.x - 1);
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
+                targetGate.doorX = targetGate.x - 1;
+                targetGate.doorY = targetGate.y;
+            } else {
+                move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar) {
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y - 1;
+                    direction = 'u';
+                } else {
+                    move(targetGate.y, targetGate.x + 1);
+                    targetGate.doorX = targetGate.x + 1;
+                    targetGate.doorY = targetGate.y;
+                }
+            }
+        }
+    }
+    gatePair[whichGate] = targetGate;
 }
 
 bool SnakeClass::collision() {
-
+    bool result = false;
     // check if snake is too short is collision with wall
-    
-    if (snake[0].x == 0 || snake[0].x == stageWidth - 2 || snake[0].y == 0 || snake[0].y == stageHeight - 2) {
-        return true;
+    if (snake[0].x == 0 || snake[0].x == stageWidth - 1 || snake[0].y == 0 || snake[0].y == stageHeight - 2) {
+        result = true;
     }
     for (int i = 2; i < snake.size(); ++i) {
         if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
-            return true;
+            result = true;
         }
     }
     if (snakeLength < 3) {
-        return true;
+        result = true;
     }
-    
+
 
     // get something?
     for (int j = 0; j < 2; ++j) {
@@ -466,13 +518,19 @@ bool SnakeClass::collision() {
             snakeLength -= 1;
             displayScore();
             break;
+            // meet gate?
+        } else if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {
+            meetGate = j;
+            result = false;
+            break;
 
         } else {
             getGrowth = false;
             getPoison = false;
+            meetGate = -1;
         }
-    }
-    return false;
+    } // end for
+    return result;
 }
 
 void SnakeClass::moveSnake() {
@@ -502,11 +560,10 @@ void SnakeClass::moveSnake() {
             direction = 'q';
             break;
     }
-    // meet gate
-    for(int j = 0;j<2;j++){
-        if(snake[0].x == gate[j].x && snake[0].y == gate[j].y){
-            
-            meetGate(j);
+    // meet gatePair
+    for (int j = 0; j < 2; j++) {
+        if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {
+            meetGate = j;
         }
     }
 
@@ -521,18 +578,58 @@ void SnakeClass::moveSnake() {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
         addch(' ');
         snake.pop_back();
+        putGate();
         refresh();
     }
-    
 
     if (direction == 'l') {
-        snake.insert(snake.begin(), snakePart(snake[0].x - 1, snake[0].y));
+        if (meetGate == 0) {
+            findWayOut(1);
+            snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
+            putGate();
+        } else if (meetGate == 1) {
+            findWayOut(0);
+            snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
+            putGate();
+        } else {
+            snake.insert(snake.begin(), snakePart(snake[0].x - 1, snake[0].y));
+        }
     } else if (direction == 'r') {
-        snake.insert(snake.begin(), snakePart(snake[0].x + 1, snake[0].y));
+        if (meetGate == 0) {
+            findWayOut(1);
+            snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
+            putGate();
+        } else if (meetGate == 1) {
+            findWayOut(0);
+            snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
+            putGate();
+        } else {
+            snake.insert(snake.begin(), snakePart(snake[0].x + 1, snake[0].y));
+        }
     } else if (direction == 'u') {
-        snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y - 1));
+        if (meetGate == 0) {
+            findWayOut(1);
+            snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
+            putGate();
+        } else if (meetGate == 1) {
+            findWayOut(0);
+            snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
+            putGate();
+        } else {
+            snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y - 1));
+        }
     } else if (direction == 'd') {
-        snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y + 1));
+        if (meetGate == 0) {
+            findWayOut(1);
+            snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
+            putGate();
+        } else if (meetGate == 1) {
+            findWayOut(0);
+            snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
+            putGate();
+        } else {
+            snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y + 1));
+        }
     }
 
     //draw snake, check poison
@@ -547,10 +644,10 @@ void SnakeClass::moveSnake() {
             addch(snakeBodyChar);
         }
     }
-    move(22,stageHeight+13);
-    printw("snake : %d, %d",snake[0].x,snake[0].y);
-    move(23,stageHeight+13);
-    printw("current direction: %c",direction);
+    move(22, stageHeight + 13);
+    printw("snake : %d, %d", snake[0].x, snake[0].y);
+    move(23, stageHeight + 13);
+    printw("current direction: %c", direction);
     getPoison = false;
     getGrowth = false;
     refresh();

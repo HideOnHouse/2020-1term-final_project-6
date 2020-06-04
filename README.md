@@ -20,7 +20,7 @@
     - [4.3. Wall](#43-wall)
         - [4.3.1. Normal Wall](#431-normal-wall)
         - [4.3.2. Immune Wall](#432-immune-wall)
-        - [4.3.3. Gate](#433-gate)
+        - [4.3.3. Gate](#433-gatePair)
     - [4.4. Score](#44-score)
 - [5. About SnakeClass](#5-about-class)
     - [5.1. Constructor](#51-constructor)

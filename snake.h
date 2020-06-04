@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
+
 struct snakePart {
     int x, y;
 
@@ -17,26 +18,45 @@ struct snakePart {
     snakePart();
 };
 
+struct gatePart {
+    int x, y;
+    int doorX, doorY;
+
+    gatePart();
+
+    gatePart(int x, int y, int doorX, int doorY);
+};
+
 class SnakeClass {
     int snakeLength, cntGate, growthCount, poisonCount, totalGrowth, totalPoison;
     int points, tick, stageWidth, stageHeight;
-    char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar,gateWall;
+    char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar, gateChar;
     char scoreBoardChar[100];
-    bool getGrowth, getPoison;
+    bool getGrowth, getPoison, gameOver, gameClear;
     int snakeMaxLength;
-    int endScore,missionGrowth,missionPoision,missionGate;
-    snakePart gate[2];
+    int endScore, missionGrowth, missionPoison, missionGate;
+    int meetGate;
+    gatePart gatePair[2];
     snakePart growthItems[2];
     snakePart poisonItems[2];
     std::vector<snakePart> snake;
 
-    void meetGate(int meetGateIdx);
     void initBoard() const;
+
     void displayScore() const;
+
     bool checkScore();
+
     void putGrowth(int whichGrowth);
+
     void putPoison(int whichPoison);
+
+    void putGate();
+
+    void findWayOut(int whichGate);
+
     bool collision();
+
     void moveSnake();
 
 public:
