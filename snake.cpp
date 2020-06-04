@@ -89,6 +89,7 @@ SnakeClass::SnakeClass() {
     poisonCount = 0;
     totalGrowth = 0;
     totalPoison = 0;
+    cntGate = 0;
     snakeMaxLength = 3;
     missionGrowth = 5;
     missionPoison = 3;
@@ -98,14 +99,14 @@ SnakeClass::SnakeClass() {
 
     // start init item location, gate location
     for (int m = 0; m < 2; ++m) {
-        growthItems[m].x = 0;
-        growthItems[m].y = 0;
-        poisonItems[m].x = 0;
-        poisonItems[m].y = 0;
-        gatePair[m].x = 0;
-        gatePair[m].y = 0;
-        gatePair[m].doorX = 0;
-        gatePair[m].doorY = 0;
+        growthItems[m].x = -1;
+        growthItems[m].y = -1;
+        poisonItems[m].x = -1;
+        poisonItems[m].y = -1;
+        gatePair[m].x = -1;
+        gatePair[m].y = -1;
+        gatePair[m].doorX = -1;
+        gatePair[m].doorY = -1;
     }
     // end init item location
 
@@ -128,27 +129,37 @@ SnakeClass::SnakeClass() {
     for (int i = 0; i < 3; ++i) {
         snake.emplace_back(stageWidth / 2 + i, stageHeight / 2);
     }
-    // end draw initial snake
+    // end initial snake
 
 
     //draw the edge -> Will be upgraded draw the stage
-    for (int j = 0; j < stageWidth - 1; j++) {
-        move(stageHeight - 2, j);
-        addch(wallChar);
+    for (int x = 0; x < stageWidth; ++x) {
+        for (int y = 0; y < stageHeight; ++y) {
+            move(y, x);
+            if (x == 0 || x == stageWidth - 1) {
+                if (y == 0 || y == stageHeight - 1) {
+                    addch(immuneWallChar);
+                } else {
+                    addch(wallChar);
+                }
+            } else if (y == 0 || y == stageHeight - 1) {
+                if (x == 0 || x == stageWidth - 1) {
+                    addch(immuneWallChar);
+                } else {
+                    addch(wallChar);
+                }
+            } else {
+                addch(' ');
+            }
+        }
     }
-
-    for (int k = 0; k < stageHeight - 1; k++) {
-        move(k, stageWidth - 1);
-        addch(wallChar);
-    }
-
 
     //Initial - draw the snake
     for (int l = 0; l < snake.size(); ++l) {
         move(snake[l].y, snake[l].x);
         addch(l == 0 ? snakeHeadChar : snakeBodyChar);
     }
-    // end draw edge
+    // end draw snake
 
     //draw initial items, gate
     putGrowth(0);
@@ -265,7 +276,7 @@ void SnakeClass::putGrowth(int whichGrowth) {
         int tempX = xLimit(gen);
         int tempY = yLimit(gen);
 
-        for (auto & i : snake) {
+        for (auto &i : snake) {
             if (i.x == tempX && i.y == tempY) {
                 continue;
             }
@@ -297,7 +308,7 @@ void SnakeClass::putPoison(int whichPoison) {
     while (true) {
         int tempX = xLimit(gen);
         int tempY = yLimit(gen);
-        for (auto & i : snake) {
+        for (auto &i : snake) {
             if (i.x == tempX && i.y == tempY) {
                 continue;
             }
@@ -325,6 +336,10 @@ void SnakeClass::putGate() {
     for (auto &k : gatePair) {
         move(k.y, k.x);
         addch(wallChar);
+        k.x = 0;
+        k.y = 0;
+        k.doorX = 0;
+        k.doorY = 0;
     }
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -405,7 +420,8 @@ void SnakeClass::findWayOut(int whichGate) {
             targetGate.doorY = targetGate.y;
         } else {
             move(targetGate.y + 1, targetGate.x);
-            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y + 1 < stageHeight - 1) {
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                targetGate.y + 1 < stageHeight - 1) {
                 targetGate.doorX = targetGate.x;
                 targetGate.doorY = targetGate.y + 1;
             } else {
@@ -423,7 +439,8 @@ void SnakeClass::findWayOut(int whichGate) {
         }
     } else if (direction == 'd') {
         move(targetGate.y + 1, targetGate.x);
-        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y + 1 < stageHeight - 1) {
+        if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+            targetGate.y + 1 < stageHeight - 1) {
             targetGate.doorX = targetGate.x;
             targetGate.doorY = targetGate.y + 1;
         } else {
@@ -519,6 +536,7 @@ bool SnakeClass::collision() {
         } else if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {
             meetGate = j;
             result = false;
+            cntGate += 1;
             break;
 
         } else {
