@@ -173,8 +173,6 @@ SnakeClass::SnakeClass() {
     putGrowth(0);
     putGrowth(1);
     putPoison(0);
-    putGate();
-    checkMeetGate = false;
     // end draw initial item, gate
 
     initBoard();
@@ -538,7 +536,6 @@ bool SnakeClass::collision() {
             meetGate = j;
             result = false;
             cntGate += 1;
-            checkMeetGate = true;
             break;
 
         } else {
@@ -596,11 +593,9 @@ void SnakeClass::refreshSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x - 1, snake[0].y));
         }
@@ -608,11 +603,9 @@ void SnakeClass::refreshSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x + 1, snake[0].y));
         }
@@ -620,11 +613,9 @@ void SnakeClass::refreshSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y - 1));
         }
@@ -632,18 +623,12 @@ void SnakeClass::refreshSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y + 1));
         }
-    }
-    if(checkMeetGate){
-        putGate();
-        checkMeetGate = false;
     }
 
     //draw snake, check poison
@@ -659,9 +644,9 @@ void SnakeClass::refreshSnake() {
         }
     }
 
-    // if (getRandom(0, 20) == 1) {
-    //     putGate();
-    // }
+    if (getRandom(0, 20) == 1) {
+        putGate();
+    }
 
     move(22, stageHeight + 13);
     printw("snake : %d, %d", snake[0].x, snake[0].y);
