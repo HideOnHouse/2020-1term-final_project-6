@@ -32,6 +32,7 @@ class SnakeClass {
     int snakeMaxLength;
     int endScore, missionGrowth, missionPoison, missionGate;
     int meetGate;
+    char checkMeetGate;
     gatePart gatePair[2];
     snakePart growthItems[2];
     snakePart poisonItems[2];
