@@ -68,22 +68,56 @@ snakePart::snakePart() {
 }
 
 SnakeClass::SnakeClass() {
-    WINDOW *win1;
+    WINDOW *win2;
+    WINDOW *scoreBoard;
+    WINDOW *Mission;
     initscr();
     resize_term(100,100);
     start_color();
     init_pair(1,COLOR_WHITE,COLOR_RED);
-
-    border('*','*','*','*','*','*','*','*');
-    mvprintw(15,3,"Press any button");
-    mvprintw(16,3,"to start");
-    refresh();
-    getch();
     
-    win1 = newwin(100,100,1,1);
-    wbkgd(win1,COLOR_PAIR(1));
-    wattron(win1,COLOR_PAIR(1));
-    //mvprintw(win1,2,2,"newwin");
+    // make flag of game start
+    win2 = newwin(4,21,1,1);
+    wbkgd(win2, COLOR_PAIR(1));
+    wattron(win2, COLOR_PAIR(1));
+    mvwprintw(win2, 1, 1,"press any button");
+    mvwprintw(win2,2, 1,"to start snake game");
+    wborder(win2,'*','*','*','*','*','*','*','*');
+    
+    wrefresh(win2);
+    
+    getch();
+
+    // make new window of score board
+    scoreBoard = newwin(8,37,1,33);
+    //wborder(scoreBoard,'*','*','*','*','*','*','*','*');
+    for(int i = 0;i<=37;i++){
+        if(i == 0 || i == 36){
+            mvwprintw(scoreBoard,0,i,"*");
+            mvwprintw(scoreBoard,7,i,"*");
+        }else{
+            mvwprintw(scoreBoard,0,i,"-");
+            mvwprintw(scoreBoard,7,i,"-");
+        }
+        
+    }
+    wrefresh(scoreBoard);
+
+    //make new window of mission
+    Mission = newwin(7,10,9,33);
+    //wborder(Mission,'*','*','*','*','*','*','*','*');
+    for(int i = 0;i<=9;i++){
+        if(i == 0 || i == 9){
+            mvwprintw(Mission,0,i,"*");
+            mvwprintw(Mission,6,i,"*");
+        }else{
+            mvwprintw(Mission,0,i,"-");
+            mvwprintw(Mission,6,i,"-");
+        }
+        
+    }
+    wrefresh(Mission);
+    
     nodelay(stdscr, true); // the program not wait until the user press a key
     keypad(stdscr, true);
     noecho();
@@ -203,7 +237,8 @@ void SnakeClass::start() {
 }
 
 void SnakeClass::displayScore() const {
-
+    
+    
     //write the points
     move(3, stageHeight + 13);
     printw("%d", snakeLength);
@@ -212,21 +247,23 @@ void SnakeClass::displayScore() const {
     move(5, stageHeight + 13);
     printw("%d", totalPoison);
     move(7, stageHeight + 13);
-    move(16, stageHeight + 13);
 
+
+    
     // for debug
-    printw("current growth count %d", growthCount);
     move(17, stageHeight + 13);
+    printw("current growth count %d", growthCount);
+    move(18, stageHeight + 13);
     printw("current poison count %d", poisonCount);
     for (int i = 0; i < 2; ++i) {
-        move(i + 15, stageHeight + 13);
+        move(i + 16, stageHeight + 13);
         printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
-        move(i + 15 + 3, stageHeight + 13);
+        move(i + 16 + 3, stageHeight + 13);
         printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
     }
-    move(20, stageHeight + 13);
-    printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
     move(21, stageHeight + 13);
+    printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
+    move(22, stageHeight + 13);
     printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
     // end for debug
 
@@ -251,26 +288,26 @@ void SnakeClass::initBoard() const {
     move(7, stageHeight + 10);
     addstr("T: 0 (Gate Used)");
 
-    move(9, stageHeight + 10);
-    addstr("Mission");
     move(10, stageHeight + 10);
+    addstr("Mission");
+    move(11, stageHeight + 10);
     addstr("B:");
-    move(10, stageHeight + 13);
+    move(11, stageHeight + 13);
     printw("%d", endScore);
 
 
-    move(11, stageHeight + 10);
-    addstr("+:");
-    move(11, stageHeight + 13);
-    printw("%d", missionGrowth);
     move(12, stageHeight + 10);
-    addstr("-:");
+    addstr("+:");
     move(12, stageHeight + 13);
+    printw("%d", missionGrowth);
+    move(13, stageHeight + 10);
+    addstr("-:");
+    move(13, stageHeight + 13);
     printw("%d", missionPoison);
 
-    move(13, stageHeight + 10);
+    move(14, stageHeight + 10);
     addstr("G:");
-    move(13, stageHeight + 13);
+    move(14, stageHeight + 13);
     printw("%d", missionGate);
 
 }
@@ -648,9 +685,9 @@ void SnakeClass::refreshSnake() {
         putGate();
     }
 
-    move(22, stageHeight + 13);
-    printw("snake : %d, %d", snake[0].x, snake[0].y);
     move(23, stageHeight + 13);
+    printw("snake : %d, %d", snake[0].x, snake[0].y);
+    move(24, stageHeight + 13);
     printw("current direction: %c", direction);
     getPoison = false;
     getGrowth = false;
