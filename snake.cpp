@@ -30,6 +30,12 @@
 위 4가지의 목표치를 만들고 해당 목표치 달성 시 게임 종료(이것 또한 몇개를 달성해야 종료할지는 알아서 정하기)
  */
 
+#include <ctime>
+#include <random>
+#include <zconf.h>
+#include "snake.h"
+#include "ncurses.h"
+
 /*
  * TODO List
  * - Implement Goal
@@ -44,11 +50,12 @@
  */
 
 
-#include <ctime>
-#include <random>
-#include <zconf.h>
-#include "snake.h"
-#include "ncurses.h"
+int getRandom(int min, int max) {
+    std::random_device rd;
+    std::mt19937 twister(rd());
+    std::uniform_int_distribution<int> range(min, max);
+    return range(twister);
+}
 
 snakePart::snakePart(int col, int row) {
     x = col;
@@ -58,20 +65,6 @@ snakePart::snakePart(int col, int row) {
 snakePart::snakePart() {
     x = 0;
     y = 0;
-}
-
-gatePart::gatePart() {
-    x = 0;
-    y = 0;
-    doorX = 0;
-    doorY = 0;
-}
-
-gatePart::gatePart(int x, int y, int doorX, int doorY) {
-    x = x;
-    y = y;
-    doorX = doorX;
-    doorY = doorY;
 }
 
 SnakeClass::SnakeClass() {
@@ -143,7 +136,7 @@ SnakeClass::SnakeClass() {
                     addch(wallChar);
                 }
             } else if (y == 0 || y == stageHeight - 1) {
-                if (x == 0 || x == stageWidth - 1) {
+                if (x == stageWidth - 1) {
                     addch(immuneWallChar);
                 } else {
                     addch(wallChar);
@@ -180,14 +173,14 @@ void SnakeClass::start() {
             break;
         }
         //displayScore();
-        moveSnake();
+        refreshSnake();
         if (direction == 'q') {
             break;
         }
 
         if (checkScore()) {
             move(stageWidth / 2 - 4, stageHeight / 2);
-            printw("Game Over");
+            printw("You Win!");
             break;
         }
         usleep(tick);
@@ -268,13 +261,9 @@ void SnakeClass::initBoard() const {
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
-    std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
     while (true) {
-        int tempX = xLimit(gen);
-        int tempY = yLimit(gen);
+        int tempX = getRandom(1, stageWidth - 3);
+        int tempY = getRandom(1, stageHeight - 4);
 
         for (auto &i : snake) {
             if (i.x == tempX && i.y == tempY) {
@@ -297,17 +286,13 @@ void SnakeClass::putGrowth(int whichGrowth) {
     move(growthItems[whichGrowth].y, growthItems[whichGrowth].x);
     addch(growthItemChar);
     growthCount += 1;
-    refresh();
+//    refresh();
 }
 
 void SnakeClass::putPoison(int whichPoison) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> xLimit(1, stageWidth - 3);
-    std::uniform_int_distribution<int> yLimit(1, stageHeight - 4);
     while (true) {
-        int tempX = xLimit(gen);
-        int tempY = yLimit(gen);
+        int tempX = getRandom(1, stageWidth - 3);
+        int tempY = getRandom(1, stageHeight - 4);
         for (auto &i : snake) {
             if (i.x == tempX && i.y == tempY) {
                 continue;
@@ -329,32 +314,26 @@ void SnakeClass::putPoison(int whichPoison) {
     move(poisonItems[whichPoison].y, poisonItems[whichPoison].x);
     addch(poisonItemChar);
     poisonCount += 1;
-    refresh();
+//    refresh();
 }
 
 void SnakeClass::putGate() {
-    for (auto &k : gatePair) {
-        move(k.y, k.x);
-        addch(wallChar);
-        k.x = 0;
-        k.y = 0;
-        k.doorX = 0;
-        k.doorY = 0;
+    if (gatePair->x != -1) {
+        removeGate();
     }
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(0, 100);
     int gateIndex = 0;
     while (gateIndex < 2) {
         for (int i = 0; i < stageWidth; ++i) {
             for (int j = 0; j < stageHeight; ++j) {
                 move(j, i);
                 if (inch() == wallChar) {
-                    if (dis(gen) == 5) {
+                    if (getRandom(0, 50) == 1 && gateIndex < 2) {
                         gatePair[gateIndex].x = i;
                         gatePair[gateIndex].y = j;
                         addch(gateChar);
                         gateIndex += 1;
+                    } else {
+                        break;
                     }
                 }
             }
@@ -465,6 +444,18 @@ void SnakeClass::findWayOut(int whichGate) {
     gatePair[whichGate] = targetGate;
 }
 
+void SnakeClass::removeGate() {
+    for (int i = 0; i < 2; ++i) {
+
+        move(gatePair[i].y, gatePair[i].x);
+        addch(wallChar);
+        gatePair[i].x = -1;
+        gatePair[i].y = -1;
+        gatePair[i].doorX = -1;
+        gatePair[i].doorY = -1;
+    }
+}
+
 bool SnakeClass::collision() {
     bool result = false;
     // check if snake is too short is collision with wall
@@ -489,13 +480,10 @@ bool SnakeClass::collision() {
             growthItems[j].y = -1;
             getGrowth = true;
             growthCount -= 1;
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<int> dis(0, 1);
             if (growthCount == 0) {
                 putGrowth(j);
 
-            } else if (growthCount == 1 && dis(gen)) {
+            } else if (growthCount == 1 && getRandom(0, 1) == 0) {
                 putGrowth(j);
 
             } else {
@@ -514,19 +502,15 @@ bool SnakeClass::collision() {
             poisonItems[j].y = -1;
             poisonCount -= 1;
             getPoison = true;
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<int> dis(0, 1);
             if (poisonCount == 0) {
                 putPoison(j);
 
-            } else if (poisonCount == 1 && dis(gen)) {
+            } else if (poisonCount == 1 && getRandom(0, 1) == 0) {
                 putGrowth(j);
 
             } else {
                 putPoison(j);
             }
-
             totalPoison += 1;
             points -= 1;
             snakeLength -= 1;
@@ -548,7 +532,7 @@ bool SnakeClass::collision() {
     return result;
 }
 
-void SnakeClass::moveSnake() {
+void SnakeClass::refreshSnake() {
     int currentKey = getch();
     switch (currentKey) {
         case KEY_LEFT:
@@ -575,12 +559,6 @@ void SnakeClass::moveSnake() {
             direction = 'q';
             break;
     }
-    // meet gatePair
-    for (int j = 0; j < 2; j++) {
-        if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {
-            meetGate = j;
-        }
-    }
 
     if (!getGrowth) {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
@@ -593,7 +571,6 @@ void SnakeClass::moveSnake() {
         move(snake[snake.size() - 1].y, snake[snake.size() - 1].x);
         addch(' ');
         snake.pop_back();
-        putGate();
         refresh();
     }
 
@@ -601,11 +578,9 @@ void SnakeClass::moveSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            putGate();
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            putGate();
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x - 1, snake[0].y));
         }
@@ -613,11 +588,9 @@ void SnakeClass::moveSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            putGate();
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            putGate();
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x + 1, snake[0].y));
         }
@@ -625,11 +598,9 @@ void SnakeClass::moveSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            putGate();
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            putGate();
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y - 1));
         }
@@ -637,11 +608,9 @@ void SnakeClass::moveSnake() {
         if (meetGate == 0) {
             findWayOut(1);
             snake.insert(snake.begin(), snakePart(gatePair[1].doorX, gatePair[1].doorY));
-            putGate();
         } else if (meetGate == 1) {
             findWayOut(0);
             snake.insert(snake.begin(), snakePart(gatePair[0].doorX, gatePair[0].doorY));
-            putGate();
         } else {
             snake.insert(snake.begin(), snakePart(snake[0].x, snake[0].y + 1));
         }
@@ -659,6 +628,11 @@ void SnakeClass::moveSnake() {
             addch(snakeBodyChar);
         }
     }
+
+    if (getRandom(0, 20) == 1) {
+        putGate();
+    }
+
     move(22, stageHeight + 13);
     printw("snake : %d, %d", snake[0].x, snake[0].y);
     move(23, stageHeight + 13);

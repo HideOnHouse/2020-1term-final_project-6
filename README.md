@@ -30,7 +30,7 @@
     - [5.5. putGrowth()](#55-putgrowth)
     - [5.6. putPoison()](#56-putpoison)
     - [5.7. collision()](#57-collision)
-    - [5.8. moveSnake()](#58-movesnake)
+    - [5.8. refreshSnake()](#58-movesnake)
     - [5.9. Destructor](#59-destructor)
 
 ## 1. Contributor
@@ -132,7 +132,7 @@ Description deferred.
 - growthCount, poisonCount부분이 굉장히 복잡한데, 수정이 시급
 - 멤버 변수 getGrowth, getPoison을 변경한다
 - 게임이 종료되는 상태가 발생하면 true, 그렇지 않으면 false를 리턴한다
-### 5.8. void moveSnake()
+### 5.8. void refreshSnake()
 - 유저의 인풋을 받아 방향을 결정한다
 - 현재 진행방향의 반대로 입력하면 입력을 무시하지만, 게임 룰에 위배된다
 - getGrowth, getPoison을 여기에서 검사하고, 포션의 행동을 실행시킨다

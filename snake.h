@@ -21,10 +21,6 @@ struct snakePart {
 struct gatePart {
     int x, y;
     int doorX, doorY;
-
-    gatePart();
-
-    gatePart(int x, int y, int doorX, int doorY);
 };
 
 class SnakeClass {
@@ -55,9 +51,11 @@ class SnakeClass {
 
     void findWayOut(int whichGate);
 
+    void removeGate();
+
     bool collision();
 
-    void moveSnake();
+    void refreshSnake();
 
 public:
     SnakeClass();
