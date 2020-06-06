@@ -75,7 +75,8 @@ SnakeClass::SnakeClass() {
     init_pair(1,COLOR_WHITE,COLOR_RED);
 
     border('*','*','*','*','*','*','*','*');
-    mvprintw(15,15,"Press any button to start");
+    mvprintw(15,3,"Press any button");
+    mvprintw(16,3,"to start");
     refresh();
     getch();
     
