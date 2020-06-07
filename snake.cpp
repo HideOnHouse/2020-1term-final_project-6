@@ -68,16 +68,25 @@ snakePart::snakePart() {
 }
 
 SnakeClass::SnakeClass() {
-//    WINDOW *win2;
+
     WINDOW *scoreBoard;
     WINDOW *Mission;
+    WINDOW *startMenu;                              //   start menu완성 되면 삭제
+    WINDOW *stage;                               
+    
+    startMenu = newwin(20, 20, 20, 20);             //   start menu완성 되면 삭제
     initscr();
-    resize_term(100,100);
+    resize_term(100,100);                       
     start_color();
     init_pair(1,COLOR_WHITE,COLOR_RED);
+    wattron(startMenu, 1);                                      //start menu완성 되면 삭제
+    mvwprintw(startMenu, 10, 5, "Press Any Key To Start.");     //start menu완성 되면 삭제
+    wrefresh(startMenu);                                        //start menu완성 되면 삭제
+    getch();                                                    //start menu완성 되면 삭제
+    
 
     // make new window of score board
-    scoreBoard = newwin(8,37,1,33);
+    scoreBoard = newwin(8,37,4,27);
     //wborder(scoreBoard,'*','*','*','*','*','*','*','*');
     for(int i = 0;i<=37;i++){
         if(i == 0 || i == 36){
@@ -92,7 +101,7 @@ SnakeClass::SnakeClass() {
     wrefresh(scoreBoard);
 
     //make new window of mission
-    Mission = newwin(7,10,9,33);
+    Mission = newwin(7,10,12,27);
     //wborder(Mission,'*','*','*','*','*','*','*','*');
     for(int i = 0;i<=9;i++){
         if(i == 0 || i == 9){
@@ -105,7 +114,13 @@ SnakeClass::SnakeClass() {
         
     }
     wrefresh(Mission);
-    
+
+    //new window of current stage
+    stage = newwin(3,8,0,27);
+    wborder(stage,'-','-','-','-','-','-','-','-');
+    mvwprintw(stage,1,1,"stage%d",1);
+    wrefresh(stage);
+
     nodelay(stdscr, true); // the program not wait until the user press a key
     keypad(stdscr, true);
     noecho();
@@ -228,30 +243,30 @@ void SnakeClass::displayScore() const {
     
     
     //write the points
-    move(3, stageHeight + 13);
+    move(6, stageHeight + 7);
     printw("%d", snakeLength);
-    move(4, stageHeight + 13);
+    move(7, stageHeight + 7);
     printw("%d", totalGrowth);
-    move(5, stageHeight + 13);
+    move(8, stageHeight + 7);
     printw("%d", totalPoison);
-    move(7, stageHeight + 13);
+    move(9, stageHeight + 7);
 
 
     
     // for debug
-    move(17, stageHeight + 13);
+    move(20, stageHeight + 13);
     printw("current growth count %d", growthCount);
-    move(18, stageHeight + 13);
+    move(21, stageHeight + 13);
     printw("current poison count %d", poisonCount);
     for (int i = 0; i < 2; ++i) {
-        move(i + 16, stageHeight + 13);
+        move(i + 19, stageHeight + 13);
         printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
-        move(i + 16 + 3, stageHeight + 13);
+        move(i + 19 + 3, stageHeight + 13);
         printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
     }
-    move(21, stageHeight + 13);
+    move(24, stageHeight + 13);
     printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
-    move(22, stageHeight + 13);
+    move(25, stageHeight + 13);
     printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
     // end for debug
 
@@ -263,39 +278,39 @@ bool SnakeClass::checkScore() const {
 }
 
 void SnakeClass::initBoard() const {
-    move(2, stageHeight + 10);
+    move(5, stageHeight + 4);
     addstr("Score Board");
-    move(3, stageHeight + 10);
+    move(6, stageHeight + 4);
     addstr("B: 3 (Current Length)/(Max Length)");
-    move(4, stageHeight + 10);
+    move(7, stageHeight + 4);
     addstr("+: 0 (Obtained Growth Items)");
-    move(5, stageHeight + 10);
+    move(8, stageHeight + 4);
     addstr("-: 0 (Obtained Poison Items)");
-    move(6, stageHeight + 10);
+    move(9, stageHeight + 4);
     addstr("G: 0 (Gate Used)");
-    move(7, stageHeight + 10);
+    move(10, stageHeight + 4);
     addstr("T: 0 (Gate Used)");
 
-    move(10, stageHeight + 10);
+    move(13, stageHeight + 4);
     addstr("Mission");
-    move(11, stageHeight + 10);
+    move(14, stageHeight + 4);
     addstr("B:");
-    move(11, stageHeight + 13);
+    move(14, stageHeight + 7);
     printw("%d", endScore);
 
 
-    move(12, stageHeight + 10);
+    move(15, stageHeight + 4);
     addstr("+:");
-    move(12, stageHeight + 13);
+    move(15, stageHeight + 7);
     printw("%d", missionGrowth);
-    move(13, stageHeight + 10);
+    move(16, stageHeight + 4);
     addstr("-:");
-    move(13, stageHeight + 13);
+    move(16, stageHeight + 7);
     printw("%d", missionPoison);
 
-    move(14, stageHeight + 10);
+    move(17, stageHeight + 4);
     addstr("G:");
-    move(14, stageHeight + 13);
+    move(17, stageHeight + 7);
     printw("%d", missionGate);
 
 }
