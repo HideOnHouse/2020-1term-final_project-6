@@ -26,7 +26,7 @@ struct gatePart {
 class SnakeClass {
     int snakeLength, cntGate, growthCount, poisonCount, totalGrowth, totalPoison;
     int points, tick, stageWidth, stageHeight;
-    char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar, gateChar;
+    char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar, gateChar, currentChar;
     char scoreBoardChar[100];
     bool getGrowth, getPoison, gameOver, gameClear;
     int snakeMaxLength;

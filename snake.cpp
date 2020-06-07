@@ -68,25 +68,13 @@ snakePart::snakePart() {
 }
 
 SnakeClass::SnakeClass() {
-    WINDOW *win2;
+//    WINDOW *win2;
     WINDOW *scoreBoard;
     WINDOW *Mission;
     initscr();
     resize_term(100,100);
     start_color();
     init_pair(1,COLOR_WHITE,COLOR_RED);
-    
-    // make flag of game start
-    win2 = newwin(4,21,1,1);
-    wbkgd(win2, COLOR_PAIR(1));
-    wattron(win2, COLOR_PAIR(1));
-    mvwprintw(win2, 1, 1,"press any button");
-    mvwprintw(win2,2, 1,"to start snake game");
-    wborder(win2,'*','*','*','*','*','*','*','*');
-    
-    wrefresh(win2);
-    
-    getch();
 
     // make new window of score board
     scoreBoard = newwin(8,37,1,33);
@@ -313,24 +301,15 @@ void SnakeClass::initBoard() const {
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
+    char tempChar;
     while (true) {
         int tempX = getRandom(1, stageWidth - 3);
         int tempY = getRandom(1, stageHeight - 4);
-
-        for (auto &i : snake) {
-            if (i.x == tempX && i.y == tempY) {
-                continue;
-            }
+        move(tempY, tempX);
+        tempChar = inch();
+        if (tempChar != ' ') {
+            continue;
         }
-        for (int j = 0; j < 2; ++j) {
-            if (tempX == growthItems[j].x && tempY == growthItems[j].y) {
-                continue;
-            }
-            if (tempX == poisonItems[j].x && tempY == poisonItems[j].y) {
-                continue;
-            }
-        }
-
         growthItems[whichGrowth].x = tempX;
         growthItems[whichGrowth].y = tempY;
         break;
@@ -342,23 +321,14 @@ void SnakeClass::putGrowth(int whichGrowth) {
 }
 
 void SnakeClass::putPoison(int whichPoison) {
+    char tempChar;
     while (true) {
         int tempX = getRandom(1, stageWidth - 3);
         int tempY = getRandom(1, stageHeight - 4);
-        for (auto &i : snake) {
-            if (i.x == tempX && i.y == tempY) {
-                continue;
-            }
+        tempChar = inch();
+        if (tempChar != ' ') {
+            continue;
         }
-        for (int j = 0; j < 2; ++j) {
-            if (tempX == growthItems[j].x && tempY == growthItems[j].y) {
-                continue;
-            }
-            if (tempX == poisonItems[j].x && tempY == poisonItems[j].y) {
-                continue;
-            }
-        }
-
         poisonItems[whichPoison].x = tempX;
         poisonItems[whichPoison].y = tempY;
         break;
@@ -511,13 +481,8 @@ void SnakeClass::removeGate() {
 bool SnakeClass::collision() {
     bool result = false;
     // check if snake is too short is collision with wall
-    if (snake[0].x == 0 || snake[0].x == stageWidth - 1 || snake[0].y == 0 || snake[0].y == stageHeight - 2) {
+    if (currentChar == wallChar || currentChar == immuneWallChar || currentChar == snakeBodyChar) {
         result = true;
-    }
-    for (int i = 2; i < snake.size(); ++i) {
-        if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
-            result = true;
-        }
     }
     if (snakeLength < 3) {
         result = true;
@@ -668,6 +633,8 @@ void SnakeClass::refreshSnake() {
         }
     }
 
+    move(snake[0].y, snake[0].x);
+    currentChar = inch();
     //draw snake, check poison
     for (int i = 0; i < snake.size(); ++i) {
         move(snake[i].y, snake[i].x);
