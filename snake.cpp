@@ -164,6 +164,7 @@ SnakeClass::SnakeClass() {
     gateChar = 'G';
     points = 0;
     tick = 150000; // Refresh Rate(Frequency)
+    itemTick = 0;
     getGrowth = false;
     getPoison = false;
     meetGate = -1;
@@ -234,6 +235,18 @@ void SnakeClass::start() {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("You Win!");
             break;
+        }
+        itemTick += 1;
+        if (itemTick == 10) {
+            itemTick = 0;
+            for (int i = 0; i < 2; ++i) {
+                if (growthItems[i].x != -1) {
+                    putGrowth(i);
+                }
+                if (poisonItems[i].x != -1) {
+                    putPoison(i);
+                }
+            }
         }
         usleep(tick);
     }
@@ -316,6 +329,8 @@ void SnakeClass::initBoard() const {
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {
+    move(growthItems[whichGrowth].y, growthItems[whichGrowth].x);
+    addch(' ');
     char tempChar;
     while (true) {
         int tempX = getRandom(1, stageWidth - 3);
@@ -336,6 +351,8 @@ void SnakeClass::putGrowth(int whichGrowth) {
 }
 
 void SnakeClass::putPoison(int whichPoison) {
+    move(poisonItems[whichPoison].y, poisonItems[whichPoison].x);
+    addch(' ');
     char tempChar;
     while (true) {
         int tempX = getRandom(1, stageWidth - 3);
