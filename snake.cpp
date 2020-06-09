@@ -70,64 +70,31 @@ snakePart::snakePart() {
 
 SnakeClass::SnakeClass(int whichStage) {
 
-    WINDOW *scoreBoard;
-    WINDOW *Mission;
-    WINDOW *startMenu;                              //   start menu완성 되면 삭제
-    WINDOW *stage;
+    WINDOW *startMenu;          //start menu완성 되면 삭제
+    WINDOW *Mission;                            
+    WINDOW *stage;                               
 
-    startMenu = newwin(20, 20, 20, 20);             //   start menu완성 되면 삭제
+    stageClass currentStage(whichStage);
+
     initscr();
-    resize_term(100, 100);
+    resize_term(80,80);                       
     start_color();
-    init_pair(1, COLOR_BLACK, COLOR_WHITE);
-    wattron(startMenu, 1);                                      //start menu완성 되면 삭제
-    mvwprintw(startMenu, 10, 5, "Press Any Key To Start.");     //start menu완성 되면 삭제
-    wrefresh(startMenu);                                        //start menu완성 되면 삭제
-    getch();                                                    //start menu완성 되면 삭제
-
-
-    // make new window of score board
-    scoreBoard = newwin(8, 37, 4, 27);
-    //wborder(scoreBoard,'*','*','*','*','*','*','*','*');
-    for (int i = 0; i <= 37; i++) {
-        if (i == 0 || i == 36) {
-            mvwprintw(scoreBoard, 0, i, "*");
-            mvwprintw(scoreBoard, 7, i, "*");
-        } else {
-            mvwprintw(scoreBoard, 0, i, "-");
-            mvwprintw(scoreBoard, 7, i, "-");
-        }
-
-    }
-    wrefresh(scoreBoard);
-
-    //make new window of mission
-    Mission = newwin(7, 10, 12, 27);
-    //wborder(Mission,'*','*','*','*','*','*','*','*');
-    for (int i = 0; i <= 9; i++) {
-        if (i == 0 || i == 9) {
-            mvwprintw(Mission, 0, i, "*");
-            mvwprintw(Mission, 6, i, "*");
-        } else {
-            mvwprintw(Mission, 0, i, "-");
-            mvwprintw(Mission, 6, i, "-");
-        }
-
-    }
-    wrefresh(Mission);
-
-    //new window of current stageClass
-    stage = newwin(3, 8, 0, 27);
-    wborder(stage, '-', '-', '-', '-', '-', '-', '-', '-');
-    mvwprintw(stage, 1, 1, "stageClass%d", 1);
-    wrefresh(stage);
+    //bkgd(COLOR_PAIR(1));
+    //attron(COLOR_PAIR(1));
+    init_pair(1,COLOR_WHITE,COLOR_BLACK);
+    init_pair(2,COLOR_YELLOW,COLOR_BLACK);
+    //startMenu = newwin(20, 20, 20, 20);
+    attron(COLOR_PAIR(1));                              //start menu완성 되면 삭제
+    mvprintw(10, 5, "Press Any Key ");                  //start menu완성 되면 삭제
+    mvprintw(11, 5, "To Start.");                       //start menu완성 되면 삭제
+    attroff(COLOR_PAIR(1));                             //start menu완성 되면 삭제
+    refresh();                                          //start menu완성 되면 삭제
+    getch();  
 
     nodelay(stdscr, true); // the program not wait until the user press a key
     keypad(stdscr, true);
     noecho();
     curs_set(0);
-
-    stageClass currentStage(whichStage);
 
     stageHeight = currentStage.stageHeight;
     stageWidth = currentStage.stageWidth;
@@ -144,7 +111,6 @@ SnakeClass::SnakeClass(int whichStage) {
     missionGate = currentStage.missionGate;
     endScore = currentStage.endScore;
     itemTick = currentStage.itemTick;
-
 
     // start init item location, gate location
     for (int m = 0; m < 2; ++m) {
@@ -224,6 +190,31 @@ SnakeClass::SnakeClass(int whichStage) {
     }
     // end draw snake
 
+    //make new window of mission
+    Mission = newwin(7,10,14,36);
+    wattron(Mission, COLOR_PAIR(1));
+    wborder(Mission,'-','-','-','-','+','+','+','+');
+    wattroff(Mission, COLOR_PAIR(1));
+    wattron(Mission,COLOR_PAIR(2));
+    mvwprintw(Mission,1,2,"Mission");
+    mvwprintw(Mission,2,2,"B:%d",endScore);
+    mvwprintw(Mission,3,2,"+:%d",missionGrowth);
+    mvwprintw(Mission,4,2,"-:%d",missionPoison);
+    mvwprintw(Mission,5,2,"G:%d",missionGate);
+    wattroff(Mission, COLOR_PAIR(2));
+    wrefresh(Mission);
+
+    //new window of current stage
+    stage = newwin(4,10,1,36);
+    wattron(stage, COLOR_PAIR(1));
+    wborder(stage,'-','-','-','-','+','+','+','+');
+    wattroff(stage, COLOR_PAIR(1));
+    wattron(stage,COLOR_PAIR(2));
+    mvwprintw(stage, 1, 1, "stage");
+    mvwprintw(stage, 2, 1, "Class%d", 1);
+    wattroff(stage, COLOR_PAIR(2));
+    wrefresh(stage);
+
     //draw initial items, gate
     putGrowth(0);
     putGrowth(1);
@@ -253,18 +244,92 @@ void SnakeClass::start() {
             printw("You Win!");
             break;
         }
+
+        // Check time per item
+        // for(int i = 0;i<2;i++){
+        //     if(growthItems[i].x != -1) growthItems[i].time += 1;
+        //     if(poisonItems[i].x != -1) poisonItems[i].time += 1;
+        // }
+        
+        // for(int i = 0;i<2;++i){
+        //     if(growthItems[i].time == 35){
+        //         if (growthItems[i].x != -1){
+        //             growthCount -= 1;
+        //             putGrowth(i);  
+        //         }
+        //     }
+        //     if(poisonItems[i].time==35){
+        //         if (poisonItems[i].x != -1){
+        //             poisonCount -= 1;
+        //             putPoison(i);
+        //         }    
+        //     }
+        // }
+        // if(poisonCount==2 && (poisonItems[0].x) == -1){
+        //     poisonCount -= 1;
+        //     putPoison(0);
+        // }
+        // if(poisonCount==2 && (poisonItems[1].x) == -1){
+        //     poisonCount -= 1;
+        //     putPoison(1);
+        // }
+        // if(growthCount==2 && (growthItems[0].x) == -1){
+        //     growthCount -= 1;
+        //     putGrowth(0);
+        // }
+        // if(growthCount==2 && (growthItems[1].x) == -1){
+        //     growthCount -= 1;
+        //     putGrowth(1);
+        // }
+       
+        if(growthCount == 0) putGrowth(0);
         itemTick += 1;
-        if (itemTick == 10) {
+        if (itemTick == 35) {
             itemTick = 0;
             for (int i = 0; i < 2; ++i) {
                 if (growthItems[i].x != -1) {
+                    growthCount -= 1;
                     putGrowth(i);
                 }
                 if (poisonItems[i].x != -1) {
+                    poisonCount -= 1;
                     putPoison(i);
                 }
             }
         }
+        if(poisonCount==2 && (poisonItems[0].x) == -1){
+            poisonCount -= 1;
+            putPoison(0);
+        }
+        if(poisonCount==2 && (poisonItems[1].x) == -1){
+            poisonCount -= 1;
+            putPoison(1);
+        }
+        if(growthCount==2 && (growthItems[0].x) == -1){
+            growthCount -= 1;
+            putGrowth(0);
+        }
+        if(growthCount==2 && (growthItems[1].x) == -1){
+            growthCount -= 1;
+            putGrowth(1);
+        }
+
+        // make new window of score board
+         WINDOW *scoreBoard;
+        scoreBoard = newwin(8,37,5,36);
+        wattron(scoreBoard, COLOR_PAIR(1));
+        wborder(scoreBoard,'-','-','-','-','+','+','+','+');
+        wattroff(scoreBoard, COLOR_PAIR(1));
+        wattron(scoreBoard, COLOR_PAIR(2));
+        mvwprintw(scoreBoard,1,2,"scoreboard");
+        mvwprintw(scoreBoard,2,2,"B: %d (Current Length)/(Max Length)",snakeLength);
+        mvwprintw(scoreBoard,3,2,"+: %d (Obtained Growth Items)",totalGrowth);
+        mvwprintw(scoreBoard,4,2,"-: %d (Obtained Poison Items)",totalPoison);
+        mvwprintw(scoreBoard,5,2,"G: %d (Gate Used)",missionGate);
+        mvwprintw(scoreBoard,6,2,"T: 0 (Gate Used)");
+        wattroff(scoreBoard, COLOR_PAIR(2));
+        wrefresh(scoreBoard);
+
         usleep(tick);
     }
 }
@@ -273,31 +338,35 @@ void SnakeClass::displayScore() const {
 
 
     //write the points
-    move(6, stageHeight + 7);
-    printw("%d", snakeLength);
-    move(7, stageHeight + 7);
-    printw("%d", totalGrowth);
-    move(8, stageHeight + 7);
-    printw("%d", totalPoison);
-    move(9, stageHeight + 7);
+    // move(6, stageHeight + 7);
+    // printw("%d", snakeLength);
+    // move(7, stageHeight + 7);
+    // printw("%d", totalGrowth);
+    // move(8, stageHeight + 7);
+    // printw("%d", totalPoison);
+    // move(9, stageHeight + 7);
 
 
 
     // for debug
-    move(20, stageHeight + 13);
+    move(29, stageHeight + 13);
     printw("current growth count %d", growthCount);
-    move(21, stageHeight + 13);
+    move(30, stageHeight + 13);
     printw("current poison count %d", poisonCount);
     for (int i = 0; i < 2; ++i) {
-        move(i + 19, stageHeight + 13);
+        move(i + 22, stageHeight + 13);
         printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
-        move(i + 19 + 3, stageHeight + 13);
+        move(i + 22 + 3, stageHeight + 13);
         printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
     }
-    move(24, stageHeight + 13);
+    move(27, stageHeight + 13);
     printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
-    move(25, stageHeight + 13);
+    move(28, stageHeight + 13);
     printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
+    // move(26, stageHeight + 13);
+    // printw("growCount : %d", growthCount);
+    // move(27, stageHeight + 13);
+    // printw("poisonCount :  %d", poisonCount);
     // end for debug
 
     refresh();
@@ -308,40 +377,40 @@ bool SnakeClass::checkScore() const {
 }
 
 void SnakeClass::initBoard() const {
-    move(5, stageHeight + 4);
-    addstr("Score Board");
-    move(6, stageHeight + 4);
-    addstr("B: 3 (Current Length)/(Max Length)");
-    move(7, stageHeight + 4);
-    addstr("+: 0 (Obtained Growth Items)");
-    move(8, stageHeight + 4);
-    addstr("-: 0 (Obtained Poison Items)");
-    move(9, stageHeight + 4);
-    addstr("G: 0 (Gate Used)");
-    move(10, stageHeight + 4);
-    addstr("T: 0 (Gate Used)");
+    // move(5, stageHeight + 4);
+    // addstr("Score Board");
+    // move(6, stageHeight + 4);
+    // addstr("B: 3 (Current Length)/(Max Length)");
+    // move(7, stageHeight + 4);
+    // addstr("+: 0 (Obtained Growth Items)");
+    // move(8, stageHeight + 4);
+    // addstr("-: 0 (Obtained Poison Items)");
+    // move(9, stageHeight + 4);
+    // addstr("G: 0 (Gate Used)");
+    // move(10, stageHeight + 4);
+    // addstr("T: 0 (Gate Used)");
 
-    move(13, stageHeight + 4);
-    addstr("Mission");
-    move(14, stageHeight + 4);
-    addstr("B:");
-    move(14, stageHeight + 7);
-    printw("%d", endScore);
+    // move(13, stageHeight + 4);
+    // addstr("Mission");
+    // move(14, stageHeight + 4);
+    // addstr("B:");
+    // move(14, stageHeight + 7);
+    // printw("%d", endScore);
 
 
-    move(15, stageHeight + 4);
-    addstr("+:");
-    move(15, stageHeight + 7);
-    printw("%d", missionGrowth);
-    move(16, stageHeight + 4);
-    addstr("-:");
-    move(16, stageHeight + 7);
-    printw("%d", missionPoison);
+    // move(15, stageHeight + 4);
+    // addstr("+:");
+    // move(15, stageHeight + 7);
+    // printw("%d", missionGrowth);
+    // move(16, stageHeight + 4);
+    // addstr("-:");
+    // move(16, stageHeight + 7);
+    // printw("%d", missionPoison);
 
-    move(17, stageHeight + 4);
-    addstr("G:");
-    move(17, stageHeight + 7);
-    printw("%d", missionGate);
+    // move(17, stageHeight + 4);
+    // addstr("G:");
+    // move(17, stageHeight + 7);
+    // printw("%d", missionGate);
 
 }
 

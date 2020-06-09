@@ -12,7 +12,7 @@
 #include "stageClass.h"
 
 struct snakePart {
-    int x, y;
+    int x, y,time;
 
     snakePart(int col, int row);
 
