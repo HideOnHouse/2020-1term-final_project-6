@@ -29,7 +29,6 @@ class SnakeClass {
     char direction, snakeHeadChar, snakeBodyChar, wallChar, immuneWallChar, growthItemChar, poisonItemChar, gateChar, currentChar;
     char scoreBoardChar[100];
     bool getGrowth, getPoison, gameOver, gameClear;
-    int snakeMaxLength;
     int endScore, missionGrowth, missionPoison, missionGate;
     int meetGate;
     gatePart gatePair[2];
