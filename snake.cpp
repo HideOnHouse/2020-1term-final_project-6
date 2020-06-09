@@ -34,6 +34,7 @@
 #include <random>
 #include <zconf.h>
 #include "snake.h"
+#include "stageClass.h"
 #include "ncurses.h"
 
 /*
@@ -42,7 +43,7 @@
  * - Implement gatePair
  * - Add Obstacle -> Same as add Stage
  * - Revise collision method -> get the Character of current snakeHead's coordinate
- * - add stage -> Revise Constructor
+ * - add stageClass -> Revise Constructor
  * - popup Press any button to start when start game
  * - Implement scoreBoard (solved)
  * - Put item randomly (max item 3) (solved)
@@ -67,66 +68,69 @@ snakePart::snakePart() {
     y = 0;
 }
 
-SnakeClass::SnakeClass() {
+SnakeClass::SnakeClass(int whichStage) {
 
     WINDOW *scoreBoard;
     WINDOW *Mission;
     WINDOW *startMenu;                              //   start menu완성 되면 삭제
-    WINDOW *stage;                               
-    
+    WINDOW *stage;
+
     startMenu = newwin(20, 20, 20, 20);             //   start menu완성 되면 삭제
     initscr();
-    resize_term(100,100);                       
+    resize_term(100, 100);
     start_color();
-    init_pair(1,COLOR_WHITE,COLOR_RED);
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
     wattron(startMenu, 1);                                      //start menu완성 되면 삭제
     mvwprintw(startMenu, 10, 5, "Press Any Key To Start.");     //start menu완성 되면 삭제
     wrefresh(startMenu);                                        //start menu완성 되면 삭제
     getch();                                                    //start menu완성 되면 삭제
-    
+
 
     // make new window of score board
-    scoreBoard = newwin(8,37,4,27);
+    scoreBoard = newwin(8, 37, 4, 27);
     //wborder(scoreBoard,'*','*','*','*','*','*','*','*');
-    for(int i = 0;i<=37;i++){
-        if(i == 0 || i == 36){
-            mvwprintw(scoreBoard,0,i,"*");
-            mvwprintw(scoreBoard,7,i,"*");
-        }else{
-            mvwprintw(scoreBoard,0,i,"-");
-            mvwprintw(scoreBoard,7,i,"-");
+    for (int i = 0; i <= 37; i++) {
+        if (i == 0 || i == 36) {
+            mvwprintw(scoreBoard, 0, i, "*");
+            mvwprintw(scoreBoard, 7, i, "*");
+        } else {
+            mvwprintw(scoreBoard, 0, i, "-");
+            mvwprintw(scoreBoard, 7, i, "-");
         }
-        
+
     }
     wrefresh(scoreBoard);
 
     //make new window of mission
-    Mission = newwin(7,10,12,27);
+    Mission = newwin(7, 10, 12, 27);
     //wborder(Mission,'*','*','*','*','*','*','*','*');
-    for(int i = 0;i<=9;i++){
-        if(i == 0 || i == 9){
-            mvwprintw(Mission,0,i,"*");
-            mvwprintw(Mission,6,i,"*");
-        }else{
-            mvwprintw(Mission,0,i,"-");
-            mvwprintw(Mission,6,i,"-");
+    for (int i = 0; i <= 9; i++) {
+        if (i == 0 || i == 9) {
+            mvwprintw(Mission, 0, i, "*");
+            mvwprintw(Mission, 6, i, "*");
+        } else {
+            mvwprintw(Mission, 0, i, "-");
+            mvwprintw(Mission, 6, i, "-");
         }
-        
+
     }
     wrefresh(Mission);
 
-    //new window of current stage
-    stage = newwin(3,8,0,27);
-    wborder(stage,'-','-','-','-','-','-','-','-');
-    mvwprintw(stage,1,1,"stage%d",1);
+    //new window of current stageClass
+    stage = newwin(3, 8, 0, 27);
+    wborder(stage, '-', '-', '-', '-', '-', '-', '-', '-');
+    mvwprintw(stage, 1, 1, "stageClass%d", 1);
     wrefresh(stage);
 
     nodelay(stdscr, true); // the program not wait until the user press a key
     keypad(stdscr, true);
     noecho();
     curs_set(0);
-    stageHeight = 25;
-    stageWidth = 25;
+
+    stageClass currentStage(whichStage);
+
+    stageHeight = currentStage.stageHeight;
+    stageWidth = currentStage.stageWidth;
 
     //init variables
     snakeLength = 3;
@@ -135,11 +139,11 @@ SnakeClass::SnakeClass() {
     totalGrowth = 0;
     totalPoison = 0;
     cntGate = 0;
-    snakeMaxLength = 3;
-    missionGrowth = 5;
-    missionPoison = 3;
-    missionGate = 5;
-    endScore = 5;
+    missionGrowth = currentStage.missionGrowth;
+    missionPoison = currentStage.missionPoison;
+    missionGate = currentStage.missionGate;
+    endScore = currentStage.endScore;
+    itemTick = currentStage.itemTick;
 
 
     // start init item location, gate location
@@ -164,7 +168,6 @@ SnakeClass::SnakeClass() {
     gateChar = 'G';
     points = 0;
     tick = 150000; // Refresh Rate(Frequency)
-    itemTick = 0;
     getGrowth = false;
     getPoison = false;
     meetGate = -1;
@@ -178,26 +181,36 @@ SnakeClass::SnakeClass() {
     // end initial snake
 
 
-    //draw the edge -> Will be upgraded draw the stage
-    for (int x = 0; x < stageWidth; ++x) {
-        for (int y = 0; y < stageHeight; ++y) {
-            move(y, x);
-            if (x == 0 || x == stageWidth - 1) {
-                if (y == 0 || y == stageHeight - 1) {
-                    addch(immuneWallChar);
-                } else {
-                    addch(wallChar);
+    //draw the edge -> Will be upgraded draw the stageClass
+    switch (whichStage) {
+        case 1:
+            for (int x = 0; x < stageWidth; ++x) {
+                for (int y = 0; y < stageHeight; ++y) {
+                    move(y, x);
+                    addch(currentStage.stage1[x][y]);
                 }
-            } else if (y == 0 || y == stageHeight - 1) {
-                if (x == stageWidth - 1) {
-                    addch(immuneWallChar);
-                } else {
-                    addch(wallChar);
-                }
-            } else {
-                addch(' ');
             }
-        }
+        case 2:
+            for (int x = 0; x < stageWidth; ++x) {
+                for (int y = 0; y < stageHeight; ++y) {
+                    move(y, x);
+                    addch(currentStage.stage2[x][y]);
+                }
+            }
+        case 3:
+            for (int x = 0; x < stageWidth; ++x) {
+                for (int y = 0; y < stageHeight; ++y) {
+                    move(y, x);
+                    addch(currentStage.stage3[x][y]);
+                }
+            }
+        case 4:
+            for (int x = 0; x < stageWidth; ++x) {
+                for (int y = 0; y < stageHeight; ++y) {
+                    move(y, x);
+                    addch(currentStage.stage4[x][y]);
+                }
+            }
     }
 
     //Initial - draw the snake
@@ -253,8 +266,8 @@ void SnakeClass::start() {
 }
 
 void SnakeClass::displayScore() const {
-    
-    
+
+
     //write the points
     move(6, stageHeight + 7);
     printw("%d", snakeLength);
@@ -265,7 +278,7 @@ void SnakeClass::displayScore() const {
     move(9, stageHeight + 7);
 
 
-    
+
     // for debug
     move(20, stageHeight + 13);
     printw("current growth count %d", growthCount);

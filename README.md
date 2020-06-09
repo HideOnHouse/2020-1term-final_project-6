@@ -4,7 +4,7 @@
 ## To-Do
 > 1. Implement Gate
 > 2. Implement Goal
-> 3. Add stage by revise constructor, stage can be represented as 2-dimension array
+> 3. Add stageClass by revise constructor, stageClass can be represented as 2-dimension array
 > 4. Revise collision method -> get the Character of current snakeHead's coordinate
 > 5. Append "Press any button to start when start game"
 > 6. Remove member variable snakeLength
@@ -89,7 +89,7 @@
 여기에서는 SnakePart Struct가 사용되는데, ncurses를 쉽게 사용하기 위한, 좌표를 가지고 있는 Block이다
 SnakePart는 snake, item의 생성, 변경에 사용된다. growthItem, poisonItem은 SnakePart로 구성된 2 크기의 array
 ```
-    //draw the edge -> Will be upgraded draw the stage
+    //draw the edge -> Will be upgraded draw the stageClass
     for (int j = 0; j < stageWidth - 1; ++j) {
         move(stageHeight - 2, j);
         addch(wallChar);
