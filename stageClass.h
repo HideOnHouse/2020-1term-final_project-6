@@ -10,7 +10,7 @@ class stageClass {
 public:
     int stageWidth, stageHeight, itemTick;
     int endScore, missionGrowth, missionPoison, missionGate;
-    char w, i, v;
+    char w = '1', i = '2', v = ' ';
     char stage1[25][25] = {{i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},

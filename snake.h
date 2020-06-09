@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
+#include "stageClass.h"
 
 struct snakePart {
     int x, y;
@@ -57,7 +58,7 @@ class SnakeClass {
     void refreshSnake();
 
 public:
-    SnakeClass();
+    SnakeClass(int whichStage);
 
     ~SnakeClass();
 

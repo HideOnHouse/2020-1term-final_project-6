@@ -6,9 +6,6 @@
 #include <iostream>
 
 stageClass::stageClass(int whichStage) {
-    w = '1';
-    i = '2';
-    v = ' ';
     switch (whichStage) {
         case 1:
             stageWidth = 25;
@@ -20,8 +17,8 @@ stageClass::stageClass(int whichStage) {
             missionGate = 3;
             break;
         case 2:
-            stageWidth = 30;
-            stageHeight = 30;
+            stageWidth = 29;
+            stageHeight = 29;
             itemTick = 30;
             endScore = 10;
             missionGrowth = 7;

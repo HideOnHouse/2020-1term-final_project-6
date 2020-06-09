@@ -13,7 +13,13 @@ int main() {
     // mvwprintw(startMenu, 10, 5, "Press Any Key To Start.");
     // wrefresh(startMenu);
     // getch();
-    SnakeClass s;
+    SnakeClass s = SnakeClass(1);
     s.start();
+    SnakeClass s2 = SnakeClass(2);
+    s2.start();
+    SnakeClass s3 = SnakeClass(3);
+    s3.start();
+    SnakeClass s4 = SnakeClass(4);
+    s4.start();
     return 0;
 }

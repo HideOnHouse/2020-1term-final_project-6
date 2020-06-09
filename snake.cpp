@@ -176,7 +176,7 @@ SnakeClass::SnakeClass(int whichStage) {
 
     // draw initial snake
     for (int i = 0; i < 3; ++i) {
-        snake.emplace_back(stageWidth / 2 + i, stageHeight / 2);
+        snake.emplace_back(stageWidth / 4 + i, stageHeight / 3);
     }
     // end initial snake
 
@@ -190,6 +190,7 @@ SnakeClass::SnakeClass(int whichStage) {
                     addch(currentStage.stage1[x][y]);
                 }
             }
+            break;
         case 2:
             for (int x = 0; x < stageWidth; ++x) {
                 for (int y = 0; y < stageHeight; ++y) {
@@ -197,6 +198,7 @@ SnakeClass::SnakeClass(int whichStage) {
                     addch(currentStage.stage2[x][y]);
                 }
             }
+            break;
         case 3:
             for (int x = 0; x < stageWidth; ++x) {
                 for (int y = 0; y < stageHeight; ++y) {
@@ -204,6 +206,7 @@ SnakeClass::SnakeClass(int whichStage) {
                     addch(currentStage.stage3[x][y]);
                 }
             }
+            break;
         case 4:
             for (int x = 0; x < stageWidth; ++x) {
                 for (int y = 0; y < stageHeight; ++y) {
@@ -211,6 +214,7 @@ SnakeClass::SnakeClass(int whichStage) {
                     addch(currentStage.stage4[x][y]);
                 }
             }
+            break;
     }
 
     //Initial - draw the snake
