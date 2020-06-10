@@ -37,7 +37,7 @@
 - 차영호, 양재원, 허진우
 ## 2. Version and Compile
 - Version: C++ 14
-- Compile command: `g++ -std=c++14 -o test.out main.cpp snake.cpp -lncurses`
+- Compile command: `g++ -std=c++14 -o test.out main.cpp snake.cpp stageClass.cpp -lncurses`
 ## 3. How to use
 - Can run Snake game by using compiles file `test.out`
 ## 4. Game Rule
@@ -61,7 +61,11 @@
 - 두 개가 한 쌍, 한 번에 한 쌍만 나타난다.
 - Gate는 서로 겹치지 않는다
 - Gate는 임의의 Normal Wall에서 나타난다
-- Gate의 출구가 여러개이면 진행방향이 1순위, 진행방향이 막혀있으면 시계방향으로 순위가 정해진다
+- Gate의 출구가 여러개이면 
+     1순위 : 진행방향
+     2순위 : 기존 진행방향의 시계방향
+     3순위 : 기존 진행방향의 반시계 방향
+     4순위 : 기존 진행방향의 반대방향
 - Gate는 Length가 7 이상일때 나타난다
 ### 4.4. Score
 - Snake의 길이가 15에 도달하면 다음 스테이지로
