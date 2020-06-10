@@ -64,7 +64,7 @@ public:
 
     ~SnakeClass();
 
-    void start();
+    bool start();
 };
 
 

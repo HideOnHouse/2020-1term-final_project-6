@@ -3,6 +3,7 @@
 //
 #include "snake.h"
 #include "ncurses.h"
+
 int main() {
     // WINDOW *startMenu;
     // startMenu = newwin(20, 20, 20, 20);
@@ -13,13 +14,27 @@ int main() {
     // mvwprintw(startMenu, 10, 5, "Press Any Key To Start.");
     // wrefresh(startMenu);
     // getch();
+    bool stageComplete=false;
     SnakeClass s = SnakeClass(1);
-    s.start();
+    stageComplete = s.start();
+    if(!stageComplete)
+        return 0;
+    
     SnakeClass s2 = SnakeClass(2);
-    s2.start();
+    stageComplete = s2.start();
+    if(!stageComplete)
+        return 0;
+
+
     SnakeClass s3 = SnakeClass(3);
-    s3.start();
+    stageComplete = s3.start();
+    if(!stageComplete)
+        return 0;
+
     SnakeClass s4 = SnakeClass(4);
-    s4.start();
+    stageComplete = s4.start();
+    if(!stageComplete)
+        return 0;
+    
     return 0;
 }

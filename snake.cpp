@@ -240,12 +240,13 @@ SnakeClass::SnakeClass(int whichStage) {
     //displayScore();
 }
 
-void SnakeClass::start() {
+bool SnakeClass::start() {
     while (true) {
         if (collision()) {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("Game Over");
-            break;
+            usleep(tick);
+            return false;
         }
         //displayScore();
         refreshSnake();
@@ -256,7 +257,8 @@ void SnakeClass::start() {
         if (checkScore()) {
             move(stageWidth / 2 - 4, stageHeight / 2);
             printw("You Win!");
-            break;
+            usleep(tick);
+            return true;
         }
 
         // Check time per item
@@ -346,6 +348,8 @@ void SnakeClass::start() {
 
         usleep(tick);
     }
+
+    return false;
 }
 
 void SnakeClass::displayScore() const {

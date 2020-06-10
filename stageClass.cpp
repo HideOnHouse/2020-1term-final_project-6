@@ -11,7 +11,7 @@ stageClass::stageClass(int whichStage) {
             stageWidth = 25;
             stageHeight = 25;
             itemTick = 30;
-            endScore = 10;
+            endScore = 2;
             missionGrowth = 7;
             missionPoison = 5;
             missionGate = 3;
@@ -20,7 +20,7 @@ stageClass::stageClass(int whichStage) {
             stageWidth = 29;
             stageHeight = 29;
             itemTick = 30;
-            endScore = 10;
+            endScore = 2;
             missionGrowth = 7;
             missionPoison = 5;
             missionGate = 3;
