@@ -78,7 +78,8 @@
 `initscr()`: ncurses에서 스크린 사용 선언  
 `nodelay(stdscr, true)`: stdscr(Standard Screen)은 사용자의 입력을 기다리지 않음  
 `keypad(stdscr, true)`: stdscr은 사용자의 키패드 입력을 받아온다  
-`snakeLength`: snake의 길이를 나타내는 변수이지만, snake.size()로 대체할 예정
+`snakeLength`: snake의 길이를 나타내는 변수이지만, snake.size()로 대체할 예정<br>
+Mission 과 current stage를 알려주는 new window를 만들어준다.
 
 ```
     // start init item location
@@ -140,6 +141,7 @@ Description deferred.
 - 유저의 인풋을 받아 방향을 결정한다
 - 현재 진행방향의 반대로 입력하면 입력을 무시하지만, 게임 룰에 위배된다
 - getGrowth, getPoison을 여기에서 검사하고, 포션의 행동을 실행시킨다
+- 현재 score를 new window를 만들어 보여준다.
 ### 5.9. Destructor
 - nodelay -> false
 - end using window
