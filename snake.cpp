@@ -443,6 +443,7 @@ void SnakeClass::putPoison(int whichPoison) {
     while (true) {
         int tempX = getRandom(1, stageWidth - 3);
         int tempY = getRandom(1, stageHeight - 4);
+        move(tempY, tempX);
         tempChar = inch();
         if (tempChar != ' ') {
             continue;
