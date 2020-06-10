@@ -11,19 +11,19 @@ stageClass::stageClass(int whichStage) {
             stageWidth = 25;
             stageHeight = 25;
             itemTick = 30;
-            endScore = 2;
+            endScore = 15;
             missionGrowth = 7;
             missionPoison = 5;
-            missionGate = 3;
+            missionGate = 4;
             break;
         case 2:
             stageWidth = 29;
             stageHeight = 29;
             itemTick = 30;
-            endScore = 2;
+            endScore = 15;
             missionGrowth = 7;
             missionPoison = 5;
-            missionGate = 3;
+            missionGate = 4;
             break;
         case 3:
             stageWidth = 30;
@@ -32,7 +32,7 @@ stageClass::stageClass(int whichStage) {
             endScore = 2;
             missionGrowth = 7;
             missionPoison = 5;
-            missionGate = 3;
+            missionGate = 2;
             break;
         case 4:
             stageWidth = 35;
@@ -41,7 +41,7 @@ stageClass::stageClass(int whichStage) {
             endScore = 2;
             missionGrowth = 7;
             missionPoison = 5;
-            missionGate = 3;
+            missionGate = 2;
             break;
         default:
             std::cout << "No such Stage" << std::endl;

@@ -33,6 +33,7 @@ class SnakeClass {
     int endScore, missionGrowth, missionPoison, missionGate;
     int meetGate;
     int nextStage;
+    int gameTimer;
     gatePart gatePair[2];
     snakePart growthItems[2];
     snakePart poisonItems[2];

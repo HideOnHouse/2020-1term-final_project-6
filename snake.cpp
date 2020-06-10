@@ -33,6 +33,7 @@
 #include <ctime>
 #include <random>
 #include <zconf.h>
+#include <locale.h>
 #include "snake.h"
 #include "stageClass.h"
 #include "ncurses.h"
@@ -76,6 +77,7 @@ SnakeClass::SnakeClass(int whichStage) {
 
     stageClass currentStage(whichStage);
 
+    setlocale(LC_ALL,"");
     initscr();
     resize_term(82, 82);
     start_color();
@@ -84,13 +86,15 @@ SnakeClass::SnakeClass(int whichStage) {
     init_pair(1, COLOR_WHITE, COLOR_BLACK);             //처음 press any button to start game의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
     init_pair(2, COLOR_YELLOW, COLOR_BLACK);            //점수판의 색깔 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
     
-    //startMenu = newwin(20, 20, 20, 20);
-    attron(COLOR_PAIR(1));                              //start menu완성 되면 삭제
-    mvprintw(10, 5, "Press Any Key ");                  //start menu완성 되면 삭제
-    mvprintw(11, 5, "To Start.");                       //start menu완성 되면 삭제
-    attroff(COLOR_PAIR(1));                             //start menu완성 되면 삭제
-    refresh();                                          //start menu완성 되면 삭제
+    //startMenu = newwin(7, 2, 2, 15);
+    //attron(COLOR_PAIR(1));                              //start menu완성 되면 삭제
+    mvprintw(0, 1, "Press Any Key ");                  //start menu완성 되면 삭제
+    mvprintw(1, 1, "To Start.");                       //start menu완성 되면 삭제
+    //attroff(COLOR_PAIR(1));                             //start menu완성 되면 삭제
+    //wrefresh(startMenu);                                          //start menu완성 되면 삭제
     getch();
+    //delwin(startMenu);
+    //endwin();
 
     nodelay(stdscr, true); // the program not wait until the user press a key
     keypad(stdscr, true);
@@ -107,6 +111,7 @@ SnakeClass::SnakeClass(int whichStage) {
     totalGrowth = 0;
     totalPoison = 0;
     cntGate = 0;
+    gameTimer = 0;
     missionGrowth = currentStage.missionGrowth;
     missionPoison = currentStage.missionPoison;
     missionGate = currentStage.missionGate;
@@ -155,6 +160,9 @@ SnakeClass::SnakeClass(int whichStage) {
             for (int x = 0; x < stageWidth; ++x) {
                 for (int y = 0; y < stageHeight; ++y) {
                     move(y, x);
+                    //addch("\2B1B");
+                    //if(currentStage.stage1[x][y] == '1') printw("U+0CF2");
+                    //else if(currentStage.stage1[x][y] == '2')printw("\2B1C");
                     addch(currentStage.stage1[x][y]);
                 }
             }
@@ -261,7 +269,7 @@ bool SnakeClass::start() {
             return true;
         }
 
-        // Check time per item
+        // // Check time per item
         // for(int i = 0;i<2;i++){
         //     if(growthItems[i].x != -1) growthItems[i].time += 1;
         //     if(poisonItems[i].x != -1) poisonItems[i].time += 1;
@@ -345,7 +353,7 @@ bool SnakeClass::start() {
         mvwprintw(scoreBoard, 6, 2, "T: 0 (Gate Used)");
         wattroff(scoreBoard, COLOR_PAIR(2));
         wrefresh(scoreBoard);
-
+        gameTimer += 1;
         usleep(tick);
     }
 
@@ -354,27 +362,30 @@ bool SnakeClass::start() {
 
 void SnakeClass::displayScore() const {
     // for debug
-    move(29, stageHeight + 13);
-    printw("current growth count %d", growthCount);
-    move(30, stageHeight + 13);
-    printw("current poison count %d", poisonCount);
-    for (int i = 0; i < 2; ++i) {
-        move(i + 22, stageHeight + 13);
-        printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
-        move(i + 22 + 3, stageHeight + 13);
-        printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
-    }
-    move(27, stageHeight + 13);
-    printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
-    move(28, stageHeight + 13);
-    printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
+    // move(29, stageHeight + 13);
+    // printw("current growth count %d", growthCount);
+    // move(30, stageHeight + 13);
+    // printw("current poison count %d", poisonCount);
+    // for (int i = 0; i < 2; ++i) {
+    //     move(i + 22, stageHeight + 13);
+    //     printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
+    //     move(i + 22 + 3, stageHeight + 13);
+    //     printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
+    // }
+    // move(27, stageHeight + 13);
+    // printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
+    // move(28, stageHeight + 13);
+    // printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
 
-    refresh();
+    // refresh();
 }
 
 bool SnakeClass::checkScore() const {
-    if(points == endScore){
+    if(points == endScore || cntGate == missionGate || totalGrowth == missionGrowth || totalPoison == missionPoison || gameTimer == 20000000000){
+        
         if(nextStage != 4){
+            nodelay(stdscr,false);
+
             init_pair(3, COLOR_BLUE, COLOR_BLACK);  //congratulation you win 의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
             init_pair(4, COLOR_CYAN,COLOR_BLACK);   //press any key to play stage의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
             attron(COLOR_PAIR(3));
@@ -385,11 +396,11 @@ bool SnakeClass::checkScore() const {
             attron(COLOR_PAIR(4));
             mvprintw(stageHeight/2,2,"press any button");
             mvprintw(stageHeight/2+1,2,"to play stage%d",nextStage+1);
-            nodelay(stdscr,false);
+            
             getch();
             attroff(COLOR_PAIR(4));
             nodelay(stdscr,true);
-            
+            return true;
         }
         else{
             attron(COLOR_PAIR(4));
@@ -397,7 +408,7 @@ bool SnakeClass::checkScore() const {
             mvprintw(stageHeight/2+1,2,"You're a KING");
             mvprintw(stageHeight/2+2,2,"GREAT!!!!");
             attroff(COLOR_PAIR(4));
-            
+            return true;
         }
     }
     return points == endScore;
@@ -421,6 +432,7 @@ void SnakeClass::putGrowth(int whichGrowth) {
         }
         growthItems[whichGrowth].x = tempX;
         growthItems[whichGrowth].y = tempY;
+        growthItems[whichGrowth].time = 0;
         break;
     }
     move(growthItems[whichGrowth].y, growthItems[whichGrowth].x);
@@ -443,6 +455,7 @@ void SnakeClass::putPoison(int whichPoison) {
         }
         poisonItems[whichPoison].x = tempX;
         poisonItems[whichPoison].y = tempY;
+        poisonItems[whichPoison].time = 0;
         break;
     }
     move(poisonItems[whichPoison].y, poisonItems[whichPoison].x);
@@ -476,6 +489,7 @@ void SnakeClass::putGate() {
 } // end putGate
 
 void SnakeClass::findWayOut(int whichGate) {
+    
     gatePart targetGate = gatePair[whichGate];
     if (direction == 'l') {
         move(targetGate.y, targetGate.x - 1);
@@ -791,6 +805,10 @@ void SnakeClass::refreshSnake() {
     printw("snake : %d, %d", snake[0].x, snake[0].y);
     move(24, stageHeight + 13);
     printw("current direction: %c", direction);
+    move(25, stageHeight + 13);
+    printw("timer : %d", gameTimer);
+    move(26, stageHeight + 13);
+    printw("use gate : %d", cntGate);
     getPoison = false;
     getGrowth = false;
     refresh();
