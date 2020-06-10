@@ -77,12 +77,13 @@ SnakeClass::SnakeClass(int whichStage) {
     stageClass currentStage(whichStage);
 
     initscr();
-    resize_term(80, 80);
+    resize_term(82, 82);
     start_color();
     //bkgd(COLOR_PAIR(1));
     //attron(COLOR_PAIR(1));
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);             //처음 press any button to start game의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);            //점수판의 색깔 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
+    
     //startMenu = newwin(20, 20, 20, 20);
     attron(COLOR_PAIR(1));                              //start menu완성 되면 삭제
     mvprintw(10, 5, "Press Any Key ");                  //start menu완성 되면 삭제
@@ -111,6 +112,7 @@ SnakeClass::SnakeClass(int whichStage) {
     missionGate = currentStage.missionGate;
     endScore = currentStage.endScore;
     itemTick = currentStage.itemTick;
+    nextStage = whichStage;
 
     // start init item location, gate location
     for (int m = 0; m < 2; ++m) {
@@ -255,8 +257,6 @@ bool SnakeClass::start() {
         }
 
         if (checkScore()) {
-            move(stageWidth / 2 - 4, stageHeight / 2);
-            printw("You Win!");
             usleep(tick);
             return true;
         }
@@ -353,19 +353,6 @@ bool SnakeClass::start() {
 }
 
 void SnakeClass::displayScore() const {
-
-
-    //write the points
-    // move(6, stageHeight + 7);
-    // printw("%d", snakeLength);
-    // move(7, stageHeight + 7);
-    // printw("%d", totalGrowth);
-    // move(8, stageHeight + 7);
-    // printw("%d", totalPoison);
-    // move(9, stageHeight + 7);
-
-
-
     // for debug
     move(29, stageHeight + 13);
     printw("current growth count %d", growthCount);
@@ -381,55 +368,43 @@ void SnakeClass::displayScore() const {
     printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
     move(28, stageHeight + 13);
     printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
-    // move(26, stageHeight + 13);
-    // printw("growCount : %d", growthCount);
-    // move(27, stageHeight + 13);
-    // printw("poisonCount :  %d", poisonCount);
-    // end for debug
 
     refresh();
 }
 
 bool SnakeClass::checkScore() const {
+    if(points == endScore){
+        if(nextStage != 4){
+            init_pair(3, COLOR_BLUE, COLOR_BLACK);  //congratulation you win 의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
+            init_pair(4, COLOR_CYAN,COLOR_BLACK);   //press any key to play stage의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
+            attron(COLOR_PAIR(3));
+            
+            mvprintw(stageHeight/2-4,2,"congratulation!!!!");
+            mvprintw(stageHeight/2-3,2,"You Win!!");
+            attroff(COLOR_PAIR(3));
+            attron(COLOR_PAIR(4));
+            mvprintw(stageHeight/2,2,"press any button");
+            mvprintw(stageHeight/2+1,2,"to play stage%d",nextStage+1);
+            nodelay(stdscr,false);
+            getch();
+            attroff(COLOR_PAIR(4));
+            nodelay(stdscr,true);
+            
+        }
+        else{
+            attron(COLOR_PAIR(4));
+            mvprintw(stageHeight/2,2,"congratulation!!!!");
+            mvprintw(stageHeight/2+1,2,"You're a KING");
+            mvprintw(stageHeight/2+2,2,"GREAT!!!!");
+            attroff(COLOR_PAIR(4));
+            
+        }
+    }
     return points == endScore;
+    
 }
 
 void SnakeClass::initBoard() const {
-    // move(5, stageHeight + 4);
-    // addstr("Score Board");
-    // move(6, stageHeight + 4);
-    // addstr("B: 3 (Current Length)/(Max Length)");
-    // move(7, stageHeight + 4);
-    // addstr("+: 0 (Obtained Growth Items)");
-    // move(8, stageHeight + 4);
-    // addstr("-: 0 (Obtained Poison Items)");
-    // move(9, stageHeight + 4);
-    // addstr("G: 0 (Gate Used)");
-    // move(10, stageHeight + 4);
-    // addstr("T: 0 (Gate Used)");
-
-    // move(13, stageHeight + 4);
-    // addstr("Mission");
-    // move(14, stageHeight + 4);
-    // addstr("B:");
-    // move(14, stageHeight + 7);
-    // printw("%d", endScore);
-
-
-    // move(15, stageHeight + 4);
-    // addstr("+:");
-    // move(15, stageHeight + 7);
-    // printw("%d", missionGrowth);
-    // move(16, stageHeight + 4);
-    // addstr("-:");
-    // move(16, stageHeight + 7);
-    // printw("%d", missionPoison);
-
-    // move(17, stageHeight + 4);
-    // addstr("G:");
-    // move(17, stageHeight + 7);
-    // printw("%d", missionGate);
-
 }
 
 void SnakeClass::putGrowth(int whichGrowth) {

@@ -32,6 +32,7 @@ class SnakeClass {
     bool getGrowth, getPoison, gameOver, gameClear;
     int endScore, missionGrowth, missionPoison, missionGate;
     int meetGate;
+    int nextStage;
     gatePart gatePair[2];
     snakePart growthItems[2];
     snakePart poisonItems[2];
