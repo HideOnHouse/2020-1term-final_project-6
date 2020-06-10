@@ -12,7 +12,7 @@
 #include "stageClass.h"
 
 struct snakePart {
-    int x, y,time;
+    int x, y, time;
 
     snakePart(int col, int row);
 
@@ -52,6 +52,8 @@ class SnakeClass {
     void findWayOut(int whichGate);
 
     void removeGate();
+
+    void checkGate();
 
     bool collision();
 
