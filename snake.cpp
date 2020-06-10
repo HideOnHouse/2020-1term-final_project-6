@@ -509,16 +509,19 @@ void SnakeClass::findWayOut(int whichGate) {
                 targetGate.doorX = targetGate.x;
                 targetGate.doorY = targetGate.y - 1;
             } else {
-                move(targetGate.y, targetGate.x + 1);
+                move(targetGate.y + 1, targetGate.x);
                 if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                    targetGate.x + 1 < stageWidth - 1) {
-                    targetGate.doorX = targetGate.x + 1;
-                    targetGate.doorY = targetGate.y;
-                    direction = 'r';
-                } else {
-                    move(targetGate.y + 1, targetGate.x);
+                    targetGate.y + 1 < stageHeight - 1) {
                     targetGate.doorX = targetGate.x;
                     targetGate.doorY = targetGate.y + 1;
+                } else {
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                        targetGate.x + 1 < stageWidth - 1){
+                        targetGate.doorX = targetGate.x + 1;
+                        targetGate.doorY = targetGate.y;
+                        direction = 'r';
+                    }
+                    
                 }
             }
         }
@@ -534,16 +537,18 @@ void SnakeClass::findWayOut(int whichGate) {
                 targetGate.doorX = targetGate.x + 1;
                 targetGate.doorY = targetGate.y;
             } else {
-                move(targetGate.y + 1, targetGate.x);
-                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                    targetGate.y + 1 < stageHeight - 1) {
-                    targetGate.doorX = targetGate.x;
-                    targetGate.doorY = targetGate.y + 1;
-                    direction = 'd';
-                } else {
-                    move(targetGate.y, targetGate.x - 1);
+                move(targetGate.y, targetGate.x - 1);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
                     targetGate.doorX = targetGate.x - 1;
                     targetGate.doorY = targetGate.y;
+                } else {
+                    move(targetGate.y + 1, targetGate.x);
+                    if(inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                        targetGate.y + 1 < stageHeight - 1){
+                        targetGate.doorX = targetGate.x;
+                        targetGate.doorY = targetGate.y + 1;
+                        direction = 'd';
+                    }
                 }
             }
         }
@@ -559,15 +564,18 @@ void SnakeClass::findWayOut(int whichGate) {
                 targetGate.doorX = targetGate.x;
                 targetGate.doorY = targetGate.y + 1;
             } else {
-                move(targetGate.y, targetGate.x - 1);
-                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
-                    targetGate.doorX = targetGate.x - 1;
-                    targetGate.doorY = targetGate.y;
-                    direction = 'l';
-                } else {
-                    move(targetGate.y - 1, targetGate.x);
+                move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.y - 1 > 0) {
                     targetGate.doorX = targetGate.x;
                     targetGate.doorY = targetGate.y - 1;
+                } else {
+                    move(targetGate.y, targetGate.x - 1);
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0){
+                        targetGate.doorX = targetGate.x - 1;
+                        targetGate.doorY = targetGate.y;
+                        direction = 'l';
+                    }
+                    
                 }
             }
         }
@@ -578,26 +586,32 @@ void SnakeClass::findWayOut(int whichGate) {
             targetGate.doorX = targetGate.x;
             targetGate.doorY = targetGate.y + 1;
         } else {
-            move(targetGate.y, targetGate.x - 1);
-            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
-                targetGate.doorX = targetGate.x - 1;
+            move(targetGate.y, targetGate.x + 1);
+            if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                targetGate.x + 1 < stageWidth - 1) {
+                targetGate.doorX = targetGate.x + 1;
                 targetGate.doorY = targetGate.y;
             } else {
-                move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
-                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar) {
-                    targetGate.doorX = targetGate.x;
-                    targetGate.doorY = targetGate.y - 1;
-                    direction = 'u';
-                } else {
-                    move(targetGate.y, targetGate.x + 1);
-                    targetGate.doorX = targetGate.x + 1;
+                move(targetGate.y, targetGate.x - 1);
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && 
+                    targetGate.x - 1 > 0) {
+                    targetGate.doorX = targetGate.x - 1;
                     targetGate.doorY = targetGate.y;
+                } else {
+                    move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar){
+                        targetGate.doorX = targetGate.x;
+                        targetGate.doorY = targetGate.y - 1;
+                        direction = 'u';
+                    }
+                    
                 }
             }
         }
     }
     gatePair[whichGate] = targetGate;
 }
+
 
 void SnakeClass::removeGate() {
     for (int i = 0; i < 2; ++i) {
