@@ -468,6 +468,7 @@ void SnakeClass::putPoison(int whichPoison) {
 }
 
 void SnakeClass::putGate() {
+    int distance = 0;
     if (gatePair->x != -1) {
         removeGate();
     }
@@ -480,8 +481,16 @@ void SnakeClass::putGate() {
                     if (getRandom(0, 50) == 1 && gateIndex < 2) {
                         gatePair[gateIndex].x = i;
                         gatePair[gateIndex].y = j;
-                        addch(gateChar);
-                        gateIndex += 1;
+                        if (gateIndex == 1) {
+                            distance = ((i - gatePair[0].x) * (i - gatePair[0].x)) +
+                                       ((j - gatePair[0].y) * (j - gatePair[0].y));
+                            if (distance < 100) {
+                                continue;
+                            }
+                        } else {
+                            gateIndex += 1;
+                            addch(gateChar);
+                        }
                     } else {
                         break;
                     }
