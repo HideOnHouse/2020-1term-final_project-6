@@ -202,9 +202,10 @@ SnakeClass::SnakeClass(int whichStage) {
 
     //make new window of mission
     Mission = newwin(7, 10, 14, 36);
-    wattron(Mission, COLOR_PAIR(1));
-    wborder(Mission, '-', '-', '-', '-', '+', '+', '+', '+');
-    wattroff(Mission, COLOR_PAIR(1));
+    box(Mission,0,0);
+    // wattron(Mission, COLOR_PAIR(1));
+    // wborder(Mission, '-', '-', '-', '-', '+', '+', '+', '+');
+    // wattroff(Mission, COLOR_PAIR(1));
     wattron(Mission, COLOR_PAIR(2));
     mvwprintw(Mission, 1, 2, "Mission");
     mvwprintw(Mission, 2, 2, "B:%d", endScore);
@@ -216,9 +217,10 @@ SnakeClass::SnakeClass(int whichStage) {
 
     //new window of current stage
     stage = newwin(4, 10, 1, 36);
-    wattron(stage, COLOR_PAIR(1));
-    wborder(stage, '-', '-', '-', '-', '+', '+', '+', '+');
-    wattroff(stage, COLOR_PAIR(1));
+    box(stage,0,0);
+    // wattron(stage, COLOR_PAIR(1));
+    // wborder(stage, '-', '-', '-', '-', '+', '+', '+', '+');
+    // wattroff(stage, COLOR_PAIR(1));
     wattron(stage, COLOR_PAIR(2));
     mvwprintw(stage, 1, 1, "stage");
     switch (whichStage) {
@@ -341,9 +343,10 @@ bool SnakeClass::start() {
         // make new window of score board
         WINDOW *scoreBoard;
         scoreBoard = newwin(8, 37, 5, 36);
-        wattron(scoreBoard, COLOR_PAIR(1));
-        wborder(scoreBoard, '-', '-', '-', '-', '+', '+', '+', '+');
-        wattroff(scoreBoard, COLOR_PAIR(1));
+        box(scoreBoard,0,0);
+        // wattron(scoreBoard, COLOR_PAIR(1));
+        // wborder(scoreBoard, '-', '-', '-', '-', '+', '+', '+', '+');
+        // wattroff(scoreBoard, COLOR_PAIR(1));
         wattron(scoreBoard, COLOR_PAIR(2));
         mvwprintw(scoreBoard, 1, 2, "scoreboard");
         mvwprintw(scoreBoard, 2, 2, "B: %d (Current Length)/(Max Length)", snakeLength);
