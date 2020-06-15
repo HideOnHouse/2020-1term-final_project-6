@@ -352,7 +352,7 @@ bool SnakeClass::start() {
         mvwprintw(scoreBoard, 2, 2, "B: %d (Current Length)/(Max Length)", snakeLength);
         mvwprintw(scoreBoard, 3, 2, "+: %d (Obtained Growth Items)", totalGrowth);
         mvwprintw(scoreBoard, 4, 2, "-: %d (Obtained Poison Items)", totalPoison);
-        mvwprintw(scoreBoard, 5, 2, "G: %d (Gate Used)", missionGate);
+        mvwprintw(scoreBoard, 5, 2, "G: %d (Gate Used)", cntGate);
         mvwprintw(scoreBoard, 6, 2, "T: 0 (Gate Used)");
         wattroff(scoreBoard, COLOR_PAIR(2));
         wrefresh(scoreBoard);
@@ -613,6 +613,7 @@ void SnakeClass::findWayOut(int whichGate) {
             }
         }
     }
+    cntGate+=1;
     gatePair[whichGate] = targetGate;
 }
 
@@ -688,7 +689,7 @@ bool SnakeClass::collision() {
         } else if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {
             meetGate = j;
             result = false;
-            cntGate += 1;
+            //cntGate += 1;
             break;
 
         } else {
