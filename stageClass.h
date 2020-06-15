@@ -50,7 +50,7 @@ public:
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
-                           {w, v, v, v, v, v, v, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, v, v, v, v, v, v, w},
+                           {w, v, v, v, v, v, v, w, w, w, w, w, w, i, w, w, w, w, w, w, w, w, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
@@ -67,7 +67,7 @@ public:
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i}};
 
-    char stage3[30][30] = {{i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i},
+    char stage3[30][30] = {{i, w, w, w, w, w, w, i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i},
                            {w, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},
@@ -96,7 +96,7 @@ public:
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, w},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w, v, v, v, v, v, v, w},
-                           {i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i}};
+                           {i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i, w, w, w, w, w, w, i}};
 
     char stage4[35][35] = {{i, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, i},
                            {w, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, w},

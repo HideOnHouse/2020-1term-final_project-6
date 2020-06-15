@@ -77,7 +77,7 @@ SnakeClass::SnakeClass(int whichStage) {
 
     stageClass currentStage(whichStage);
 
-    setlocale(LC_ALL,"");
+    setlocale(LC_ALL, "");
     initscr();
     resize_term(82, 82);
     start_color();
@@ -85,7 +85,7 @@ SnakeClass::SnakeClass(int whichStage) {
     //attron(COLOR_PAIR(1));
     init_pair(1, COLOR_WHITE, COLOR_BLACK);             //처음 press any button to start game의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
     init_pair(2, COLOR_YELLOW, COLOR_BLACK);            //점수판의 색깔 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
-    
+
     //startMenu = newwin(7, 2, 2, 15);
     //attron(COLOR_PAIR(1));                              //start menu완성 되면 삭제
     mvprintw(0, 1, "Press Any Key ");                  //start menu완성 되면 삭제
@@ -202,7 +202,7 @@ SnakeClass::SnakeClass(int whichStage) {
 
     //make new window of mission
     Mission = newwin(7, 10, 14, 36);
-    box(Mission,0,0);
+    box(Mission, 0, 0);
     // wattron(Mission, COLOR_PAIR(1));
     // wborder(Mission, '-', '-', '-', '-', '+', '+', '+', '+');
     // wattroff(Mission, COLOR_PAIR(1));
@@ -217,7 +217,7 @@ SnakeClass::SnakeClass(int whichStage) {
 
     //new window of current stage
     stage = newwin(4, 10, 1, 36);
-    box(stage,0,0);
+    box(stage, 0, 0);
     // wattron(stage, COLOR_PAIR(1));
     // wborder(stage, '-', '-', '-', '-', '+', '+', '+', '+');
     // wattroff(stage, COLOR_PAIR(1));
@@ -343,7 +343,7 @@ bool SnakeClass::start() {
         // make new window of score board
         WINDOW *scoreBoard;
         scoreBoard = newwin(8, 37, 5, 36);
-        box(scoreBoard,0,0);
+        box(scoreBoard, 0, 0);
         // wattron(scoreBoard, COLOR_PAIR(1));
         // wborder(scoreBoard, '-', '-', '-', '-', '+', '+', '+', '+');
         // wattroff(scoreBoard, COLOR_PAIR(1));
@@ -384,38 +384,38 @@ void SnakeClass::displayScore() const {
 }
 
 bool SnakeClass::checkScore() const {
-    if(points == endScore || cntGate == missionGate || totalGrowth == missionGrowth || totalPoison == missionPoison || gameTimer == 20000000000){
-        
-        if(nextStage != 4){
-            nodelay(stdscr,false);
+    if (points == endScore || cntGate == missionGate || totalGrowth == missionGrowth || totalPoison == missionPoison ||
+        gameTimer == 20000000000) {
+
+        if (nextStage != 4) {
+            nodelay(stdscr, false);
 
             init_pair(3, COLOR_BLUE, COLOR_BLACK);  //congratulation you win 의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
-            init_pair(4, COLOR_CYAN,COLOR_BLACK);   //press any key to play stage의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
+            init_pair(4, COLOR_CYAN, COLOR_BLACK);   //press any key to play stage의 팔레트 앞 : 글씨색깔, 뒤 : 배경색깔
             attron(COLOR_PAIR(3));
-            
-            mvprintw(stageHeight/2-4,2,"congratulation!!!!");
-            mvprintw(stageHeight/2-3,2,"You Win!!");
+
+            mvprintw(stageHeight / 2 - 4, 2, "congratulation!!!!");
+            mvprintw(stageHeight / 2 - 3, 2, "You Win!!");
             attroff(COLOR_PAIR(3));
             attron(COLOR_PAIR(4));
-            mvprintw(stageHeight/2,2,"press any button");
-            mvprintw(stageHeight/2+1,2,"to play stage%d",nextStage+1);
-            
+            mvprintw(stageHeight / 2, 2, "press any button");
+            mvprintw(stageHeight / 2 + 1, 2, "to play stage%d", nextStage + 1);
+
             getch();
             attroff(COLOR_PAIR(4));
-            nodelay(stdscr,true);
+            nodelay(stdscr, true);
             return true;
-        }
-        else{
+        } else {
             attron(COLOR_PAIR(4));
-            mvprintw(stageHeight/2,2,"congratulation!!!!");
-            mvprintw(stageHeight/2+1,2,"You're a KING");
-            mvprintw(stageHeight/2+2,2,"GREAT!!!!");
+            mvprintw(stageHeight / 2, 2, "congratulation!!!!");
+            mvprintw(stageHeight / 2 + 1, 2, "You're a KING");
+            mvprintw(stageHeight / 2 + 2, 2, "GREAT!!!!");
             attroff(COLOR_PAIR(4));
             return true;
         }
     }
     return points == endScore;
-    
+
 }
 
 void SnakeClass::initBoard() const {
@@ -477,22 +477,12 @@ void SnakeClass::putGate() {
         for (int i = 0; i < stageWidth; ++i) {
             for (int j = 0; j < stageHeight; ++j) {
                 move(j, i);
-                if (inch() == wallChar) {
-                    if (getRandom(0, 50) == 1 && gateIndex < 2) {
+                if (inch() == wallChar && gateIndex < 2) {
+                    if (getRandom(0, 20) == 4) {
                         gatePair[gateIndex].x = i;
                         gatePair[gateIndex].y = j;
-                        if (gateIndex == 1) {
-                            distance = ((i - gatePair[0].x) * (i - gatePair[0].x)) +
-                                       ((j - gatePair[0].y) * (j - gatePair[0].y));
-                            if (distance < 100) {
-                                continue;
-                            }
-                        } else {
-                            gateIndex += 1;
-                            addch(gateChar);
-                        }
-                    } else {
-                        break;
+                        addch(gateChar);
+                        gateIndex += 1;
                     }
                 }
             }
@@ -500,8 +490,17 @@ void SnakeClass::putGate() {
     } // end while
 } // end putGate
 
+void SnakeClass::checkGate() {
+    for (auto &i : gatePair) {
+        move(i.y, i.x);
+        if (inch() != gateChar || inch() != snakeHeadChar || inch() != snakeBodyChar) {
+            addch(gateChar);
+        }
+    }
+}
+
 void SnakeClass::findWayOut(int whichGate) {
-    
+
     gatePart targetGate = gatePair[whichGate];
     if (direction == 'l') {
         move(targetGate.y, targetGate.x - 1);
@@ -521,12 +520,12 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorY = targetGate.y + 1;
                 } else {
                     if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                        targetGate.x + 1 < stageWidth - 1){
+                        targetGate.x + 1 < stageWidth - 1) {
                         targetGate.doorX = targetGate.x + 1;
                         targetGate.doorY = targetGate.y;
                         direction = 'r';
                     }
-                    
+
                 }
             }
         }
@@ -548,8 +547,8 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorY = targetGate.y;
                 } else {
                     move(targetGate.y + 1, targetGate.x);
-                    if(inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                        targetGate.y + 1 < stageHeight - 1){
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
+                        targetGate.y + 1 < stageHeight - 1) {
                         targetGate.doorX = targetGate.x;
                         targetGate.doorY = targetGate.y + 1;
                         direction = 'd';
@@ -575,12 +574,12 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorY = targetGate.y - 1;
                 } else {
                     move(targetGate.y, targetGate.x - 1);
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0){
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
                         targetGate.doorX = targetGate.x - 1;
                         targetGate.doorY = targetGate.y;
                         direction = 'l';
                     }
-                    
+
                 }
             }
         }
@@ -598,18 +597,18 @@ void SnakeClass::findWayOut(int whichGate) {
                 targetGate.doorY = targetGate.y;
             } else {
                 move(targetGate.y, targetGate.x - 1);
-                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && 
+                if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
                     targetGate.x - 1 > 0) {
                     targetGate.doorX = targetGate.x - 1;
                     targetGate.doorY = targetGate.y;
                 } else {
                     move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar){
+                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar) {
                         targetGate.doorX = targetGate.x;
                         targetGate.doorY = targetGate.y - 1;
                         direction = 'u';
                     }
-                    
+
                 }
             }
         }
@@ -627,15 +626,6 @@ void SnakeClass::removeGate() {
         gatePair[i].y = -1;
         gatePair[i].doorX = -1;
         gatePair[i].doorY = -1;
-    }
-}
-
-void SnakeClass::checkGate() {
-    for (const auto &pair : gatePair) {
-        move(pair.y, pair.x);
-        if (inch() != gateChar) {
-            addch(gateChar);
-        }
     }
 }
 
@@ -811,6 +801,10 @@ void SnakeClass::refreshSnake() {
 
     if (getRandom(0, 20) == 1) {
         putGate();
+    }
+
+    if (cntGate != 0) {
+        checkGate();
     }
 
     move(23, stageHeight + 13);
