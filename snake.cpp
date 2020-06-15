@@ -203,9 +203,6 @@ SnakeClass::SnakeClass(int whichStage) {
     //make new window of mission
     Mission = newwin(7, 10, 14, 36);
     box(Mission, 0, 0);
-    // wattron(Mission, COLOR_PAIR(1));
-    // wborder(Mission, '-', '-', '-', '-', '+', '+', '+', '+');
-    // wattroff(Mission, COLOR_PAIR(1));
     wattron(Mission, COLOR_PAIR(2));
     mvwprintw(Mission, 1, 2, "Mission");
     mvwprintw(Mission, 2, 2, "B:%d", endScore);
@@ -218,9 +215,6 @@ SnakeClass::SnakeClass(int whichStage) {
     //new window of current stage
     stage = newwin(4, 10, 1, 36);
     box(stage, 0, 0);
-    // wattron(stage, COLOR_PAIR(1));
-    // wborder(stage, '-', '-', '-', '-', '+', '+', '+', '+');
-    // wattroff(stage, COLOR_PAIR(1));
     wattron(stage, COLOR_PAIR(2));
     mvwprintw(stage, 1, 1, "stage");
     switch (whichStage) {
@@ -249,7 +243,6 @@ SnakeClass::SnakeClass(int whichStage) {
 
     initBoard();
     refresh();
-    //displayScore();
 }
 
 bool SnakeClass::start() {
@@ -270,43 +263,6 @@ bool SnakeClass::start() {
             usleep(tick);
             return true;
         }
-
-        // // Check time per item
-        // for(int i = 0;i<2;i++){
-        //     if(growthItems[i].x != -1) growthItems[i].time += 1;
-        //     if(poisonItems[i].x != -1) poisonItems[i].time += 1;
-        // }
-
-        // for(int i = 0;i<2;++i){
-        //     if(growthItems[i].time == 35){
-        //         if (growthItems[i].x != -1){
-        //             growthCount -= 1;
-        //             putGrowth(i);  
-        //         }
-        //     }
-        //     if(poisonItems[i].time==35){
-        //         if (poisonItems[i].x != -1){
-        //             poisonCount -= 1;
-        //             putPoison(i);
-        //         }    
-        //     }
-        // }
-        // if(poisonCount==2 && (poisonItems[0].x) == -1){
-        //     poisonCount -= 1;
-        //     putPoison(0);
-        // }
-        // if(poisonCount==2 && (poisonItems[1].x) == -1){
-        //     poisonCount -= 1;
-        //     putPoison(1);
-        // }
-        // if(growthCount==2 && (growthItems[0].x) == -1){
-        //     growthCount -= 1;
-        //     putGrowth(0);
-        // }
-        // if(growthCount==2 && (growthItems[1].x) == -1){
-        //     growthCount -= 1;
-        //     putGrowth(1);
-        // }
 
         if (growthCount == 0) putGrowth(0);
         itemTick += 1;
@@ -344,9 +300,7 @@ bool SnakeClass::start() {
         WINDOW *scoreBoard;
         scoreBoard = newwin(8, 37, 5, 36);
         box(scoreBoard, 0, 0);
-        // wattron(scoreBoard, COLOR_PAIR(1));
-        // wborder(scoreBoard, '-', '-', '-', '-', '+', '+', '+', '+');
-        // wattroff(scoreBoard, COLOR_PAIR(1));
+        
         wattron(scoreBoard, COLOR_PAIR(2));
         mvwprintw(scoreBoard, 1, 2, "scoreboard");
         mvwprintw(scoreBoard, 2, 2, "B: %d (Current Length)/(Max Length)", snakeLength);
@@ -361,26 +315,6 @@ bool SnakeClass::start() {
     }
 
     return false;
-}
-
-void SnakeClass::displayScore() const {
-    // for debug
-    // move(29, stageHeight + 13);
-    // printw("current growth count %d", growthCount);
-    // move(30, stageHeight + 13);
-    // printw("current poison count %d", poisonCount);
-    // for (int i = 0; i < 2; ++i) {
-    //     move(i + 22, stageHeight + 13);
-    //     printw("growthItems coordinate %d : %d, %d", i, growthItems[i].x, growthItems[i].y);
-    //     move(i + 22 + 3, stageHeight + 13);
-    //     printw("poisonItems coordinate %d : %d, %d", i, poisonItems[i].x, poisonItems[i].y);
-    // }
-    // move(27, stageHeight + 13);
-    // printw("gatePair[0] : %d, %d", gatePair[0].x, gatePair[0].y);
-    // move(28, stageHeight + 13);
-    // printw("gatePair[1] : %d, %d", gatePair[1].x, gatePair[1].y);
-
-    // refresh();
 }
 
 bool SnakeClass::checkScore() const {
@@ -662,7 +596,6 @@ bool SnakeClass::collision() {
             points += 1;
             totalGrowth += 1;
             snakeLength += 1;
-            displayScore();
             break;
 
             // get poison?
@@ -683,7 +616,6 @@ bool SnakeClass::collision() {
             totalPoison += 1;
             points -= 1;
             snakeLength -= 1;
-            displayScore();
             break;
             // meet gate?
         } else if (snake[0].x == gatePair[j].x && snake[0].y == gatePair[j].y) {

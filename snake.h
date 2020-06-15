@@ -41,8 +41,6 @@ class SnakeClass {
 
     void initBoard() const;
 
-    void displayScore() const;
-
     bool checkScore() const;
 
     void putGrowth(int whichGrowth);
