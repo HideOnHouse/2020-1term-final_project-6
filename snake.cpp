@@ -300,7 +300,7 @@ bool SnakeClass::start() {
         WINDOW *scoreBoard;
         scoreBoard = newwin(8, 37, 5, 36);
         box(scoreBoard, 0, 0);
-        
+
         wattron(scoreBoard, COLOR_PAIR(2));
         mvwprintw(scoreBoard, 1, 2, "scoreboard");
         mvwprintw(scoreBoard, 2, 2, "B: %d (Current Length)/(Max Length)", snakeLength);
@@ -453,13 +453,9 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorX = targetGate.x;
                     targetGate.doorY = targetGate.y + 1;
                 } else {
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                        targetGate.x + 1 < stageWidth - 1) {
-                        targetGate.doorX = targetGate.x + 1;
-                        targetGate.doorY = targetGate.y;
-                        direction = 'r';
-                    }
-
+                    targetGate.doorX = targetGate.x + 1;
+                    targetGate.doorY = targetGate.y;
+                    direction = 'r';
                 }
             }
         }
@@ -480,13 +476,9 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorX = targetGate.x - 1;
                     targetGate.doorY = targetGate.y;
                 } else {
-                    move(targetGate.y + 1, targetGate.x);
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar &&
-                        targetGate.y + 1 < stageHeight - 1) {
-                        targetGate.doorX = targetGate.x;
-                        targetGate.doorY = targetGate.y + 1;
-                        direction = 'd';
-                    }
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y + 1;
+                    direction = 'd';
                 }
             }
         }
@@ -507,13 +499,9 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorX = targetGate.x;
                     targetGate.doorY = targetGate.y - 1;
                 } else {
-                    move(targetGate.y, targetGate.x - 1);
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar && targetGate.x - 1 > 0) {
-                        targetGate.doorX = targetGate.x - 1;
-                        targetGate.doorY = targetGate.y;
-                        direction = 'l';
-                    }
-
+                    targetGate.doorX = targetGate.x - 1;
+                    targetGate.doorY = targetGate.y;
+                    direction = 'l';
                 }
             }
         }
@@ -536,18 +524,14 @@ void SnakeClass::findWayOut(int whichGate) {
                     targetGate.doorX = targetGate.x - 1;
                     targetGate.doorY = targetGate.y;
                 } else {
-                    move(targetGate.y - 1, targetGate.x && targetGate.y - 1 > 0);
-                    if (inch() != wallChar && inch() != immuneWallChar && inch() != gateChar) {
-                        targetGate.doorX = targetGate.x;
-                        targetGate.doorY = targetGate.y - 1;
-                        direction = 'u';
-                    }
-
+                    targetGate.doorX = targetGate.x;
+                    targetGate.doorY = targetGate.y - 1;
+                    direction = 'u';
                 }
             }
         }
     }
-    cntGate+=1;
+    cntGate += 1;
     gatePair[whichGate] = targetGate;
 }
 
