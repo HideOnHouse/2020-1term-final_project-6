@@ -319,7 +319,7 @@ bool SnakeClass::start() {
 
 bool SnakeClass::checkScore() const {
     if (points == endScore || cntGate == missionGate || totalGrowth == missionGrowth || totalPoison == missionPoison ||
-        gameTimer == 20000000000) {
+        gameTimer == 200) {
 
         if (nextStage != 4) {
             nodelay(stdscr, false);
